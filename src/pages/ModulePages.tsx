@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react'
-import { useLocation } from 'react-router-dom'
-import { Card, Tabs, Table, Form, Input, Button, Select, Space, Modal, Popconfirm, InputNumber, Tag, Row, Col, Upload, message, Descriptions, Steps, Dropdown, Alert } from 'antd'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { Card, Tabs, Table, Form, Input, Button, Select, Space, Modal, Popconfirm, InputNumber, Tag, Row, Col, Upload, message, Descriptions, Steps, Dropdown, Alert, Checkbox, DatePicker, Radio } from 'antd'
+import type { ColumnsType } from 'antd/es/table'
 
 export const BasicInfoManagement: React.FC = () => {
   const [campusData, setCampusData] = useState<{ key: string; name: string; shortName: string; address: string; zip: string; status: string }[]>([
@@ -17,7 +18,16 @@ export const BasicInfoManagement: React.FC = () => {
     { key: 'bd2', campus: 'B校区', name: '综合楼', type: '综合楼', floors: 12, status: '启用' }
   ])
   const [classroomsData, setClassroomsData] = useState<{ key: string; code: string; campus: string; buildingName: string; floor: number; doorNo: string; name: string; type: string; capacity: number; department: string; equipment: string; status: string }[]>([
-    { key: 'rm1', code: 'ROOM001', campus: 'A校区', buildingName: 'A楼', floor: 1, doorNo: '101', name: 'A-101', type: '普通教室', capacity: 60, department: '教务处', equipment: '投影仪', status: '启用' }
+    { key: 'rm1', code: 'ROOM101', campus: 'A校区', buildingName: 'A楼', floor: 1, doorNo: '101', name: 'A-101', type: '普通教室', capacity: 60, department: '教务处', equipment: '投影仪', status: '启用' },
+    { key: 'rm2', code: 'ROOM102', campus: 'A校区', buildingName: 'A楼', floor: 1, doorNo: '102', name: 'A-102', type: '普通教室', capacity: 50, department: '教务处', equipment: '投影仪', status: '启用' },
+    { key: 'rm3', code: 'ROOM103', campus: 'A校区', buildingName: 'A楼', floor: 1, doorNo: '103', name: 'A-103', type: '普通教室', capacity: 45, department: '教务处', equipment: '投影仪', status: '启用' },
+    { key: 'rm4', code: 'ROOM104', campus: 'A校区', buildingName: 'A楼', floor: 2, doorNo: '104', name: 'A-104', type: '普通教室', capacity: 60, department: '教务处', equipment: '投影仪', status: '启用' },
+    { key: 'rm5', code: 'ROOM105', campus: 'A校区', buildingName: 'A楼', floor: 2, doorNo: '105', name: 'A-105', type: '普通教室', capacity: 55, department: '教务处', equipment: '投影仪', status: '启用' },
+    { key: 'rm6', code: 'ROOM106', campus: 'A校区', buildingName: 'A楼', floor: 2, doorNo: '106', name: 'A-106', type: '实验室', capacity: 40, department: '理学院', equipment: '实验台、电脑', status: '启用' },
+    { key: 'rm7', code: 'ROOM107', campus: 'A校区', buildingName: 'A楼', floor: 2, doorNo: '107', name: 'A-107', type: '实验室', capacity: 45, department: '理学院', equipment: '实验台、电脑', status: '启用' },
+    { key: 'rm8', code: 'ROOM108', campus: 'A校区', buildingName: 'A楼', floor: 3, doorNo: '108', name: 'A-108', type: '普通教室', capacity: 60, department: '教务处', equipment: '投影仪', status: '启用' },
+    { key: 'rm9', code: 'ROOM109', campus: 'A校区', buildingName: 'A楼', floor: 3, doorNo: '109', name: 'A-109', type: '普通教室', capacity: 50, department: '教务处', equipment: '投影仪', status: '启用' },
+    { key: 'rm10', code: 'ROOM110', campus: 'A校区', buildingName: 'A楼', floor: 3, doorNo: '110', name: 'A-110', type: '实验室', capacity: 40, department: '理学院', equipment: '实验台、电脑', status: '启用' }
   ])
   const [buildingForm] = Form.useForm()
   const [buildingAddOpen, setBuildingAddOpen] = useState(false)
@@ -411,6 +421,48 @@ export const BasicInfoManagement: React.FC = () => {
         }
       } catch {}
     }
+  }, [])
+  useEffect(() => {
+    try {
+      const base = Array.isArray(majorsData) ? majorsData : []
+      const byKey = new Map<string, any>()
+      base.forEach((m:any)=> { const k = (String(m.code||'') || String(m.name||'')); if (k) byKey.set(k, m) })
+      const fixed = [
+        { code: '080903', name: '网络工程', discipline: '计算机类', department: '计算机学院' },
+        { code: '080904', name: '信息安全', discipline: '计算机类', department: '计算机学院' },
+        { code: '080905', name: '数据科学与大数据技术', discipline: '计算机类', department: '计算机学院' },
+        { code: '080906', name: '人工智能', discipline: '计算机类', department: '计算机学院' },
+        { code: '080907', name: '物联网工程', discipline: '计算机类', department: '信息学院' },
+        { code: '080701', name: '电子信息工程', discipline: '电子信息类', department: '电子与信息学院' },
+        { code: '080801', name: '自动化', discipline: '电子信息类', department: '电子与信息学院' },
+        { code: '080202', name: '机械设计制造及其自动化', discipline: '机械类', department: '机械学院' },
+        { code: '080204', name: '材料科学与工程', discipline: '材料类', department: '材料学院' },
+        { code: '081301', name: '化学工程与工艺', discipline: '化工与制药类', department: '化工学院' },
+        { code: '083001', name: '生物工程', discipline: '生物工程类', department: '生物工程学院' },
+        { code: '070302', name: '应用化学', discipline: '理学类', department: '理学院' },
+        { code: '020204', name: '金融学', discipline: '金融学类', department: '经管学院' },
+        { code: '120201', name: '工商管理', discipline: '工商管理类', department: '经管学院' },
+        { code: '120203', name: '会计学', discipline: '工商管理类', department: '经管学院' },
+        { code: '020401', name: '国际经济与贸易', discipline: '经济学类', department: '经管学院' },
+        { code: '120601', name: '物流管理', discipline: '物流管理与工程类', department: '经管学院' },
+        { code: '040101', name: '教育学', discipline: '教育学类', department: '教育学院' },
+        { code: '130501', name: '设计学', discipline: '设计学类', department: '艺术设计学院' },
+        { code: '082105', name: '服装设计与工程', discipline: '纺织类', department: '纺织服装学院' }
+      ]
+      const merged = [...base]
+      fixed.forEach((m) => {
+        const k1 = String(m.code||'')
+        const k2 = String(m.name||'')
+        if (!byKey.has(k1) && !byKey.has(k2)) {
+          merged.push({ key: `fixed_${m.code}`, code: m.code, name: m.name, discipline: m.discipline, department: m.department, durationYears: 4, level: '本科', enabled: '启用', tracks: [] })
+          byKey.set(k1 || k2, m)
+        }
+      })
+      if (merged.length !== base.length) {
+        setMajorsData(merged)
+        localStorage.setItem('basic_major_track', JSON.stringify(merged))
+      }
+    } catch {}
   }, [])
   useEffect(() => {
     localStorage.setItem('basic_major_track', JSON.stringify(majorsData))
@@ -1070,7 +1122,7 @@ export const BasicInfoManagement: React.FC = () => {
             {title:'实训',dataIndex:'hoursTraining'},
             {title:'实践',dataIndex:'hoursPractice'},
           ]},
-          {title:'考核方式',dataIndex:'assessment'},{title:'开设学期',dataIndex:'openSemester'},{title:'来源',render:(_,r)=> (<Tag color={r.source==='新增'?'blue':'green'}>{r.source}</Tag>)},
+          {title:'考核方式',dataIndex:'assessment'},{title:'来源',render:(_,r)=> (<Tag color={r.source==='新增'?'blue':'green'}>{r.source}</Tag>)},
           {title:'操作',render:(_,record)=> (
             <Space>
               <Button size="small" onClick={()=>{ setEditingCatalogKey(record.key); editCatalogForm.setFieldsValue({ ...record }); setCatalogEditOpen(true) }}>编辑</Button>
@@ -1363,6 +1415,7 @@ export const CurriculumPlan: React.FC = () => {
   const [planCourses, setPlanCourses] = useState<PlanCourse[]>([])
   const [planAddOpen, setPlanAddOpen] = useState(false)
   const [planEditOpen, setPlanEditOpen] = useState(false)
+  const [importOpen, setImportOpen] = useState(false)
   const [editingPlanKey, setEditingPlanKey] = useState<string | null>(null)
   const [editPlanForm] = Form.useForm()
   const [planFilterForm] = Form.useForm()
@@ -1404,6 +1457,20 @@ export const CurriculumPlan: React.FC = () => {
     const a = document.createElement('a')
     a.href = url
     a.download = '专业课程设置表.csv'
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  }
+
+  const downloadPlanTemplateCSV = () => {
+    const header = ['版本','专业','年级','课程类别','课程性质','课程类型','课程编号','课程名称','学分','总学时','理论学时','实验学时','实训学时','实践学时','考核方式','开设学期']
+    const csv = [header.join(',')].join('\n')
+    const blob = new Blob([csv], {type:'text/csv;charset=utf-8'})
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = '专业课程设置导入模板.csv'
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)
@@ -1669,10 +1736,10 @@ export const CurriculumPlan: React.FC = () => {
       <Card className="page-content" id="pro-course-settings">
         <Space style={{ marginBottom: 12 }}>
           <Button type="primary" onClick={() => setPlanAddOpen(true)}>新增设置</Button>
-          <Upload accept=".csv,.json" showUploadList={false} beforeUpload={beforeImportPlan}><Button>导入</Button></Upload>
+          <Button onClick={() => setImportOpen(true)}>导入</Button>
           <Button onClick={exportPlanCSV}>导出</Button>
         </Space>
-        <Form form={planFilterForm} layout="inline" onValuesChange={(_, all)=> setPlanFilter(all)} style={{ marginBottom: 12 }}>
+      <Form form={planFilterForm} layout="inline" onValuesChange={(_, all)=> setPlanFilter(all)} style={{ marginBottom: 12 }}>
           <Form.Item name="version" label="版本"><Select allowClear style={{ width: 120 }} options={versionOptions} /></Form.Item>
           <Form.Item name="major" label="专业"><Input style={{ width: 160 }} placeholder="包含" /></Form.Item>
           <Form.Item name="grade" label="年级"><Input style={{ width: 120 }} placeholder="包含" /></Form.Item>
@@ -1727,7 +1794,20 @@ export const CurriculumPlan: React.FC = () => {
           </Form.Item>
           <Form.Item><Button onClick={()=> { planFilterForm.resetFields(); setPlanFilter({}) }}>重置</Button></Form.Item>
           <Form.Item><Button type="primary" onClick={()=> setPlanFilter(planFilterForm.getFieldsValue())}>查询</Button></Form.Item>
-        </Form>
+      </Form>
+
+      <Modal open={importOpen} title="导入" footer={null} onCancel={()=> setImportOpen(false)} width={520}>
+        <Space direction="vertical" style={{ width: '100%' }}>
+          <div>
+            请参考模板填写内容，若字段不符合规则，将会导入失败
+            <a style={{ marginLeft: 8 }} onClick={downloadPlanTemplateCSV}>下载导入模板</a>
+          </div>
+          <Upload.Dragger accept=".csv,.json" showUploadList={false} beforeUpload={beforeImportPlan}>
+            <p>将文件拖到此处，或者点击上传</p>
+          </Upload.Dragger>
+          <Button type="primary" onClick={()=> setImportOpen(false)}>确定</Button>
+        </Space>
+      </Modal>
         <Modal open={planAddOpen} title="新增课程" footer={null} onCancel={() => setPlanAddOpen(false)}>
           <Form
             form={courseForm}
@@ -1953,6 +2033,7 @@ export const OfferingPlan: React.FC = () => {
   const [offerings, setOfferings] = useState<any[]>([])
   const OFFERINGS_KEY = 'offerings'
   const PLAN_COURSES_KEY = 'planCourses'
+  const SENTINEL_TEACHER = '张三'
   useEffect(() => {
     const saved = localStorage.getItem(OFFERINGS_KEY)
     if (saved) {
@@ -1960,6 +2041,14 @@ export const OfferingPlan: React.FC = () => {
         setOfferings(JSON.parse(saved))
       } catch {}
     }
+  }, [])
+  useEffect(() => {
+    try {
+      const role = localStorage.getItem('currentUserRole')
+      if (!role) localStorage.setItem('currentUserRole', '系主任')
+      const name = localStorage.getItem('currentUserName')
+      if (!name) localStorage.setItem('currentUserName', '演示账号')
+    } catch {}
   }, [])
   useEffect(() => {
     try {
@@ -1975,7 +2064,7 @@ export const OfferingPlan: React.FC = () => {
           grade: p.grade || '',
           major: p.major || '',
           classSizeThreshold: 40,
-          teacherScope: '不限',
+          teacherScope: SENTINEL_TEACHER,
           auditChain: '系主任→教秘→教务处',
           status: '待审核'
         })).filter((r:any)=> !existing.has(`${r.course}|${r.term}|${r.grade}|${r.major}`))
@@ -1986,6 +2075,23 @@ export const OfferingPlan: React.FC = () => {
   useEffect(() => {
     localStorage.setItem(OFFERINGS_KEY, JSON.stringify(offerings))
   }, [offerings])
+  useEffect(() => {
+    const onStorage = (e: any) => {
+      if (!e) return
+      if (e.key === OFFERINGS_KEY) {
+        try {
+          const raw = localStorage.getItem(OFFERINGS_KEY) || '[]'
+          const arr = JSON.parse(raw)
+          setOfferings(Array.isArray(arr) ? arr : [])
+          message.info('已同步开课计划关联信息')
+        } catch {}
+      } else if (e.key === PLAN_COURSES_KEY) {
+        try { syncMajorFromPlan() } catch {}
+      }
+    }
+    window.addEventListener('storage', onStorage)
+    return () => window.removeEventListener('storage', onStorage)
+  }, [])
   useEffect(() => {
     try {
       const majorRaw = localStorage.getItem('basic_major_track') || ''
@@ -2004,11 +2110,36 @@ export const OfferingPlan: React.FC = () => {
       if (plans.length === 0) {
         const g = String(new Date().getFullYear() - 3)
         const now = Date.now()
-        plans = [
-          { key: `seed_${now}_1`, version: 'v2025', major: '计算机科学与技术', grade: g, category: '专业课', nature: '必修', ctype: '理论', code: 'CUR08090102', name: '操作系统', credit: 3, hoursTotal: 64, hoursTheory: 48, hoursExperiment: 8, hoursTraining: 0, hoursPractice: 8, assess: '考试', term: '1、2' },
-          { key: `seed_${now}_2`, version: 'v2025', major: '计算机科学与技术', grade: g, category: '专业课', nature: '必修', ctype: '理论', code: 'CUR08090103', name: '数据库系统', credit: 3, hoursTotal: 48, hoursTheory: 32, hoursExperiment: 16, hoursTraining: 0, hoursPractice: 0, assess: '考查', term: '1' },
-          { key: `seed_${now}_3`, version: 'v2025', major: '软件工程', grade: g, category: '专业课', nature: '必修', ctype: '理论', code: 'CUR08090104', name: '软件工程', credit: 3, hoursTotal: 48, hoursTheory: 32, hoursExperiment: 16, hoursTraining: 0, hoursPractice: 0, assess: '考查', term: '2' }
+        const pickMajors = (() => {
+          const names = (majors || []).map((m:any)=> String(m.name || m.major || '').trim()).filter(Boolean)
+          const uniq:string[] = []
+          names.forEach((n)=> { if (!uniq.includes(n)) uniq.push(n) })
+          return uniq.slice(0, 6)
+        })()
+        const baseCourses = [
+          { code: 'CUR08090102', name: '操作系统', credit: 3, hoursTotal: 64, hoursTheory: 48, hoursExperiment: 8, hoursTraining: 0, hoursPractice: 8, assess: '考试', term: '1、2' },
+          { code: 'CUR08090103', name: '数据库系统', credit: 3, hoursTotal: 48, hoursTheory: 32, hoursExperiment: 16, hoursTraining: 0, hoursPractice: 0, assess: '考查', term: '1' },
+          { code: 'CUR08090104', name: '软件工程', credit: 3, hoursTotal: 48, hoursTheory: 32, hoursExperiment: 16, hoursTraining: 0, hoursPractice: 0, assess: '考查', term: '2' }
         ]
+        plans = pickMajors.flatMap((mj, idx)=> baseCourses.map((c, ci)=> ({
+          key: `seed_${now}_${idx}_${ci}`,
+          version: 'v2025',
+          major: mj,
+          grade: g,
+          category: '专业课',
+          nature: '必修',
+          ctype: '理论',
+          code: c.code,
+          name: c.name,
+          credit: c.credit,
+          hoursTotal: c.hoursTotal,
+          hoursTheory: c.hoursTheory,
+          hoursExperiment: c.hoursExperiment,
+          hoursTraining: c.hoursTraining,
+          hoursPractice: c.hoursPractice,
+          assess: c.assess,
+          term: c.term
+        })))
         localStorage.setItem(PLAN_COURSES_KEY, JSON.stringify(plans))
       }
     } catch {}
@@ -2063,7 +2194,7 @@ export const OfferingPlan: React.FC = () => {
               ctype: p.ctype || '',
               term: String(t),
               classSizeThreshold: 40,
-              teacherScope: '不限',
+              teacherScope: SENTINEL_TEACHER,
               auditChain: '系主任→教秘→教务处',
               status: '待审核'
             }
@@ -2074,6 +2205,31 @@ export const OfferingPlan: React.FC = () => {
         if (gen.length>0) setOfferings((prev)=> [...gen, ...prev])
       }
     } catch {}
+  }
+  const syncMajorFromPlan = () => {
+    try {
+      const raw = localStorage.getItem(PLAN_COURSES_KEY) || '[]'
+      const list = JSON.parse(raw)
+      if (!Array.isArray(list) || list.length===0) return
+      const byCode = new Map<string, string>()
+      const byName = new Map<string, string>()
+      list.forEach((p:any)=> { if (p.code) byCode.set(String(p.code), String(p.major||'')); if (p.name) byName.set(String(p.name), String(p.major||'')) })
+      setOfferings((prev)=> prev.map((o)=> {
+        const m = byCode.get(String(o.code||'')) || byName.get(String(o.course||''))
+        if (m && m.length>0 && String(o.major||'')!==m) return { ...o, major: m }
+        return o
+      }))
+    } catch {}
+  }
+  useEffect(() => { syncMajorFromPlan() }, [])
+  const refreshAuditCache = () => {
+    try {
+      const raw = localStorage.getItem(OFFERINGS_KEY) || '[]'
+      const arr = JSON.parse(raw)
+      setOfferings(Array.isArray(arr) ? arr : [])
+      syncMajorFromPlan()
+      message.success('开课审核缓存已刷新')
+    } catch { message.error('刷新失败') }
   }
   const [offeringEditOpen, setOfferingEditOpen] = useState(false)
   const [editingOfferingKey, setEditingOfferingKey] = useState<string | null>(null)
@@ -2120,11 +2276,51 @@ export const OfferingPlan: React.FC = () => {
   }
   const [offeringViewOpen, setOfferingViewOpen] = useState(false)
   const [offeringViewRecord, setOfferingViewRecord] = useState<any | null>(null)
+  const [viewAdjustSelected, setViewAdjustSelected] = useState<string | null>(null)
   const openOfferingView = (record: any) => {
     setOfferingViewRecord(record)
     setOfferingViewOpen(true)
+    try {
+      const related = (adjustLogs || []).filter((l:any)=> String(l.offeringKey||'')===String(record.key||''))
+      setViewAdjustSelected(related[0]?.key || null)
+    } catch {}
   }
   const [offeringViewLayout, setOfferingViewLayout] = useState({ width: '72vw', cols: 2 })
+  const [classCatalog, setClassCatalog] = useState<string[]>([])
+  const CLASS_CATALOG_KEY = 'basic_class_catalog'
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(CLASS_CATALOG_KEY) || ''
+      let list: string[] = []
+      if (raw) { try { const parsed = JSON.parse(raw); list = Array.isArray(parsed) ? parsed : [] } catch { list = [] } }
+      if (list.length === 0) {
+        list = [
+          '机械设计制造及其自动化2001班',
+          '制药工程2001班',
+          '动漫制作技术2001班',
+          '会计学2004班',
+          '小学教育2002班',
+          '小学教育2008班',
+          '物联网工程2001班',
+          '小学教育2003班',
+          '测试班级',
+          '翟老师测试班级一',
+          '服装与服饰设计创新2101班',
+          '装饰艺术设计2101班(专)',
+          '装饰艺术设计2102班(专)',
+          '教育2021本科班',
+          '信工2021本科班',
+          '服装2021本科班',
+          '经管2021本科班',
+          '艺术2021本科班',
+          '艺术2021专科班',
+          '信工2021专科班'
+        ]
+        localStorage.setItem(CLASS_CATALOG_KEY, JSON.stringify(list))
+      }
+      setClassCatalog(list)
+    } catch {}
+  }, [])
   useEffect(() => {
     const handler = () => {
       try {
@@ -2276,7 +2472,7 @@ export const OfferingPlan: React.FC = () => {
       const all = (usersCache.list||[]).filter((u:any)=> String(u.position||'')==='教师' || (Array.isArray(u.roles) && u.roles.includes('教师')))
       const list = all.filter((u:any)=> (!teacherNameFilter || String(u.name||'').includes(String(teacherNameFilter))) && (!teacherDeptFilter || String(u.department||'')===String(teacherDeptFilter)))
       const opts = list.map((u:any)=> ({ value: u.name, label: `${u.name}（${u.department||''}${u.departmentPart?`/${u.departmentPart}`:''}）` }))
-      return [{ value: '不限', label: '不限' }, ...opts]
+      return [{ value: SENTINEL_TEACHER, label: SENTINEL_TEACHER }, ...opts]
     } catch { return [] }
   }, [usersCache, teacherNameFilter, teacherDeptFilter])
   const teacherCountAll = useMemo(() => {
@@ -2292,7 +2488,7 @@ export const OfferingPlan: React.FC = () => {
     try {
       const raw = v.teacherScope
       const teachers = Array.isArray(raw) ? raw : String(raw||'').split(/[、，,;；\s]+/)
-      const unique = Array.from(new Set(teachers.map((x:string)=> String(x||'').trim()).filter((x)=> x.length>0)))
+      const unique = Array.from(new Set(teachers.map((x:string)=> String(x||'').trim()).filter((x)=> x.length>0 && x!=='不限' && x!==SENTINEL_TEACHER)))
       const rec = offerings.find((o)=> o.key===editingOfferingKey)
       const courseCombined = rec ? `${rec.course||''}${rec.code?`(${rec.code})`:''}` : ''
       await saveTeacherLinkDB(courseCombined, unique)
@@ -2313,10 +2509,11 @@ export const OfferingPlan: React.FC = () => {
       offerings.filter((o)=> String(o.grade)===String(rec.grade) && String(o.major)===String(rec.major)).forEach((o)=> {
         String(o.linkedClass||'').split(/[、，,;；\s]+/).map((t)=> String(t||'').trim()).filter((t)=> t.length>0).forEach((t)=> s.add(t))
       })
+      classCatalog.forEach((name)=> { const v = String(name||'').trim(); if (v.length>0) s.add(v) })
       if (s.size===0) { s.add(`${String(rec.major||'')}${String(rec.grade||'')}-1`); s.add(`${String(rec.major||'')}${String(rec.grade||'')}-2`) }
-      return Array.from(s).map((v)=> ({ value: v, label: v }))
+      return Array.from(s).sort((a,b)=> a.localeCompare(b)).map((v)=> ({ value: v, label: v }))
     } catch { return [] }
-  }, [editingOfferingKey, offerings])
+  }, [editingOfferingKey, offerings, classCatalog])
   const parseAuditNodes = (chain: string) => {
     if (!chain) return []
     return chain.split('→').map((s) => s.trim()).filter((s) => s.length > 0)
@@ -2376,6 +2573,40 @@ export const OfferingPlan: React.FC = () => {
   const rejectOffering = (key: string) => {
     setOfferings((prev) => prev.map((o) => o.key === key ? { ...o, status: '已驳回' } : o))
   }
+  const getAuditMajorScope = (): string[] => {
+    try {
+      const raw = localStorage.getItem('audit_major_scope') || ''
+      if (!raw) return []
+      const parsed = JSON.parse(raw)
+      if (Array.isArray(parsed)) return parsed.map((s)=> String(s))
+      return String(raw).split(/[、，,;\s]+/).map((s)=> s.trim()).filter((s)=> s.length>0)
+    } catch { return [] }
+  }
+  const isAuthorizedMajor = (major: string): boolean => {
+    const scope = getAuditMajorScope()
+    if (!scope || scope.length===0) return true
+    return scope.includes(String(major||''))
+  }
+  const approveGroup = (group: any) => {
+    const { academic, grade, major, children } = group || {}
+    let affected = 0
+    setOfferings((prev)=> prev.map((o)=> {
+      const match = String(o.academic||'')===String(academic||'') && String(o.grade||'')===String(grade||'') && String(o.major||'')===String(major||'') && String(o.status||'')==='待审核'
+      if (match && isAuthorizedMajor(String(o.major||''))) { affected++; return { ...o, status: '已通过' } }
+      return o
+    }))
+    message.success(`已通过 ${affected} 门课程`)
+  }
+  const rejectGroup = (group: any) => {
+    const { academic, grade, major, children } = group || {}
+    let affected = 0
+    setOfferings((prev)=> prev.map((o)=> {
+      const match = String(o.academic||'')===String(academic||'') && String(o.grade||'')===String(grade||'') && String(o.major||'')===String(major||'') && String(o.status||'')==='待审核'
+      if (match && isAuthorizedMajor(String(o.major||''))) { affected++; return { ...o, status: '已驳回' } }
+      return o
+    }))
+    message.success(`已驳回 ${affected} 门课程`)
+  }
   const [electives, setElectives] = useState<any[]>([])
   const ELECTIVES_KEY = 'electives'
   useEffect(() => {
@@ -2410,9 +2641,17 @@ export const OfferingPlan: React.FC = () => {
   const seededRef = useRef(false)
   useEffect(() => {
     if (seededRef.current) return
-    const s = new Set<string>()
-    offerings.forEach((o) => { const k = `${o.academic}||${o.grade}||${o.major}`; if (o.academic && o.grade && o.major) s.add(k) })
-    if (s.size >= 3) { seededRef.current = true; return }
+    const now = new Date()
+    const month = now.getMonth() + 1
+    const currentYear = now.getFullYear()
+    const currentAcademicKey = `${month>=9 ? currentYear : currentYear-1}-${month>=9 ? '秋' : '春'}`
+    const sCurrent = new Set<string>()
+    offerings.forEach((o) => {
+      if (String(o.academic||'')!==currentAcademicKey) return
+      const k = `${o.academic}||${o.grade}||${o.major}`
+      if (o.academic && o.grade && o.major) sCurrent.add(k)
+    })
+    if (sCurrent.size >= 3) { seededRef.current = true; return }
     try {
       const majorsRaw = localStorage.getItem('basic_major_track') || '[]'
       const majors = JSON.parse(majorsRaw)
@@ -2433,12 +2672,17 @@ export const OfferingPlan: React.FC = () => {
         return `${y}-${sTerm}`
       }
       const gen: any[] = []
+      const now = new Date()
+      const month = now.getMonth() + 1
+      const currentYear = now.getFullYear()
+      const currentAcademicKey = `${month>=9 ? currentYear : currentYear-1}-${month>=9 ? '秋' : '春'}`
+      const currentTerm = month>=9 ? 1 : 2
       selected.forEach((m: any, idx: number) => {
         const grade = String(m.grade || String(new Date().getFullYear() - idx))
         const majorName = String(m.name || m.major || '')
         const duration = String(m.durationYears || m.duration || '')
-        const term = 1
-        const academic = computeAcademicLocal(grade, term)
+        const term = currentTerm
+        const academic = currentAcademicKey
         const courses = pickCourses(2 + (idx % 2))
         courses.forEach((c: any) => {
           const th = Number(c.hoursTheory || 0)
@@ -2465,11 +2709,11 @@ export const OfferingPlan: React.FC = () => {
             department: c.department || m.department || '',
             remark: '',
             status: '待审核',
-            linkedClass: '',
+            linkedClass: `${grade}${majorName}1班、${grade}${majorName}2班`,
             term: String(term),
             ctype: c.ctype || '',
             classSizeThreshold: 40,
-            teacherScope: '不限',
+            teacherScope: '张三、李四',
             auditChain: '系主任→教秘→教务处'
           })
         })
@@ -2548,7 +2792,7 @@ export const OfferingPlan: React.FC = () => {
   const exportOfferingsCSV = () => {
     const header = ['学年学期','年级','专业','学制','课程名称(编号)','课程类别','考核方式','课程地位','学分','总学时','理论学时','实验学时','实训学时','实践学时','承担单位','备注','审核状态','关联班级','开设学期','类型','分班容量阈值','教师范围','审核顺序']
     const rows = offerings.map((r:any)=>[
-      r.academic||'', r.grade||'', r.major||'', r.duration||'', `${r.course||''}${r.code?`(${r.code})`:''}`, r.category||'', r.assess||'', r.position||'', String(r.credit??''), String(r.hoursTotal??''), String(r.hoursTheory??''), String(r.hoursExperiment??''), String(r.hoursTraining??''), String(r.hoursPractice??''), r.department||'', r.remark||'', r.status||'', r.linkedClass||'', String(r.term||''), r.ctype||'', String(r.classSizeThreshold??''), r.teacherScope||'', r.auditChain||''
+      '2025~2026学年第一学期', r.grade||'', r.major||'', r.duration||'', `${r.course||''}${r.code?`(${r.code})`:''}`, r.category||'', r.assess||'', r.position||'', String(r.credit??''), String(r.hoursTotal??''), String(r.hoursTheory??''), String(r.hoursExperiment??''), String(r.hoursTraining??''), String(r.hoursPractice??''), r.department||'', r.remark||'', r.status||'', r.linkedClass||'', String(r.term||''), r.ctype||'', String(r.classSizeThreshold??''), r.teacherScope||'', r.auditChain||''
     ])
     const csv = [header.join(','), ...rows.map(r=> r.map(v=> String(v).replace(/,/g,'\u002C')).join(','))].join('\n')
     const blob = new Blob([csv], {type:'text/csv;charset=utf-8'})
@@ -2556,6 +2800,45 @@ export const OfferingPlan: React.FC = () => {
     const a = document.createElement('a')
     a.href = url
     a.download = '开课计划.csv'
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  }
+  const downloadOfferingsTemplateCSV = () => {
+    const header = ['学年学期','年级','专业','学制','课程名称(编号)','课程类别','考核方式','课程地位','学分','总学时','理论学时','实验学时','实训学时','实践学时','承担单位','备注','审核状态','关联班级','开设学期','类型','分班容量阈值','教师范围','审核顺序']
+    const csv = [header.join(',')].join('\n')
+    const blob = new Blob([csv], {type:'text/csv;charset=utf-8'})
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = '开课计划导入模板.csv'
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  }
+  const downloadLinkedClassTemplateCSV = () => {
+    const header = ['年级','专业','课程名称(编号)','关联班级']
+    const csv = [header.join(',')].join('\n')
+    const blob = new Blob([csv], {type:'text/csv;charset=utf-8'})
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = '关联班级导入模板.csv'
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  }
+  const downloadLinkedTeacherTemplateCSV = () => {
+    const header = ['年级','专业','课程名称(编号)','关联教师']
+    const csv = [header.join(',')].join('\n')
+    const blob = new Blob([csv], {type:'text/csv;charset=utf-8'})
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = '关联教师导入模板.csv'
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)
@@ -2647,6 +2930,62 @@ export const OfferingPlan: React.FC = () => {
     } catch {}
     return false
   }
+  const beforeImportOfferings = async (file: File) => {
+    try {
+      const text = await file.text()
+      let rows: any[] = []
+      if (file.name.endsWith('.json')) {
+        const data = JSON.parse(text)
+        if (Array.isArray(data)) rows = data
+      } else {
+        const lines = text.split(/\r?\n/).filter(l=>l.trim().length>0)
+        if (lines.length>1) {
+          const header = lines[0].split(',').map(h=>h.trim())
+          const idx = (name:string)=> header.findIndex(h=> h===name)
+          for (let i=1;i<lines.length;i++){
+            const cols = lines[i].split(',')
+            const combined = String(cols[idx('课程名称(编号)')]||'')
+            const name = combined.replace(/\(([^)]*)\)$/,'')
+            const code = (combined.match(/\(([^)]*)\)$/)||[])[1]||''
+            rows.push({
+              academic: cols[idx('学年学期')]||'',
+              grade: cols[idx('年级')]||'',
+              major: cols[idx('专业')]||'',
+              duration: cols[idx('学制')]||'',
+              course: name,
+              code,
+              category: cols[idx('课程类别')]||'',
+              assess: cols[idx('考核方式')]||'',
+              position: cols[idx('课程地位')]||'',
+              credit: Number(cols[idx('学分')]||0),
+              hoursTotal: Number(cols[idx('总学时')]||0),
+              hoursTheory: Number(cols[idx('理论学时')]||0),
+              hoursExperiment: Number(cols[idx('实验学时')]||0),
+              hoursTraining: Number(cols[idx('实训学时')]||0),
+              hoursPractice: Number(cols[idx('实践学时')]||0),
+              department: cols[idx('承担单位')]||'',
+              remark: cols[idx('备注')]||'',
+              status: cols[idx('审核状态')]||'待审核',
+              linkedClass: cols[idx('关联班级')]||'',
+              term: String(cols[idx('开设学期')]||cols[idx('学期')]||''),
+              ctype: cols[idx('类型')]||cols[idx('课程类型')]||'',
+              classSizeThreshold: Number(cols[idx('分班容量阈值')]||cols[idx('班容量阈值')]||40),
+              teacherScope: cols[idx('教师范围')]||cols[idx('关联教师')]||'',
+              auditChain: cols[idx('审核顺序')]||'系主任→教秘→教务处'
+            })
+          }
+        }
+      }
+      if (rows.length>0) {
+        setOfferings((prev)=> {
+          const existing = new Set(prev.map((o)=> `${o.course}|${o.term}|${o.grade}|${o.major}`))
+          const add = rows.filter((r)=> String(r.course||'').trim().length>0 && String(r.grade||'').trim().length>0 && String(r.major||'').trim().length>0 && String(r.term||'').trim().length>0 && !existing.has(`${r.course||''}|${r.term||''}|${r.grade||''}|${r.major||''}`)).map((r)=> ({ key: `imp_${r.code||r.course||''}_${r.term||''}_${r.grade||''}_${r.major||''}`, ...r }))
+          return add.length>0 ? [...add, ...prev] : prev
+        })
+      }
+    } catch {}
+    return false
+  }
   // 已移除“导入”入口按钮，保留导入函数以备后续需要
   // const beforeImportOfferings = async (file: File) => {
   //   try {
@@ -2675,6 +3014,9 @@ export const OfferingPlan: React.FC = () => {
   //   return false
   // }
   const [offeringAddOpen, setOfferingAddOpen] = useState(false)
+  const [importOfferingOpen, setImportOfferingOpen] = useState(false)
+  const [importLinkedClassOpen, setImportLinkedClassOpen] = useState(false)
+  const [importLinkedTeacherOpen, setImportLinkedTeacherOpen] = useState(false)
   const [addCourseFilter, setAddCourseFilter] = useState('')
   const [addCourseFilterDept, setAddCourseFilterDept] = useState<string | undefined>(undefined)
   const [addCourseFilterCtype, setAddCourseFilterCtype] = useState<string | undefined>(undefined)
@@ -2841,7 +3183,7 @@ export const OfferingPlan: React.FC = () => {
           term: '',
           ctype: '',
           classSizeThreshold: 0,
-          teacherScope: '不限',
+          teacherScope: SENTINEL_TEACHER,
           auditChain: '系主任→教秘→教务处'
         })
       })
@@ -2941,6 +3283,15 @@ export const OfferingPlan: React.FC = () => {
   useEffect(() => {
     localStorage.setItem(OFFERING_ADJUST_LOGS_KEY, JSON.stringify(adjustLogs))
   }, [adjustLogs])
+  const [auditLogs, setAuditLogs] = useState<Record<string, any[]>>({})
+  const AUDIT_LOG_KEY = 'offeringAuditLogs'
+  useEffect(() => {
+    const raw = localStorage.getItem(AUDIT_LOG_KEY)
+    if (raw) { try { const parsed = JSON.parse(raw); if (parsed && typeof parsed==='object') setAuditLogs(parsed) } catch {} }
+  }, [])
+  useEffect(() => {
+    try { localStorage.setItem(AUDIT_LOG_KEY, JSON.stringify(auditLogs)) } catch {}
+  }, [auditLogs])
   useEffect(() => {
     if (offerings.length>0 && adjustLogs.length===0 && !localStorage.getItem('offeringAdjustLogsSeeded')) {
       const pick = (i: number) => offerings[Math.min(i, offerings.length-1)]
@@ -3046,14 +3397,15 @@ export const OfferingPlan: React.FC = () => {
       children: (
         <Card className="page-content">
           <Space direction="vertical" style={{ width: '100%' }}>
-            <Space style={{ marginBottom: 12 }}>
-              <Button type="primary" onClick={()=> setOfferingAddOpen(true)}>新增开课计划</Button>
-              <Button onClick={exportOfferingsCSV}>导出</Button>
-              <Upload accept=".csv,.json" showUploadList={false} beforeUpload={beforeImportLinkedClass}><Button>关联班级导入</Button></Upload>
-              <Upload accept=".csv,.json" showUploadList={false} beforeUpload={beforeImportLinkedTeacher}><Button>关联教师导入</Button></Upload>
-            </Space>
+          <Space style={{ marginBottom: 12 }}>
+            <Button type="primary" onClick={()=> setOfferingAddOpen(true)}>新增开课计划</Button>
+            <Button onClick={exportOfferingsCSV}>导出</Button>
+            <Button onClick={()=> setImportOfferingOpen(true)}>导入开课计划</Button>
+            <Button onClick={()=> setImportLinkedClassOpen(true)}>关联班级导入</Button>
+            <Button onClick={()=> setImportLinkedTeacherOpen(true)}>关联教师导入</Button>
+          </Space>
             <Form form={offFilterForm} layout="inline" onValuesChange={(_,v)=> setOffFilter(v)} style={{ marginBottom: 12 }}>
-              <Form.Item name="academic" label="学年学期"><Input style={{ width: 140 }} placeholder="示例：2025~2025 第一学期" /></Form.Item>
+              <Form.Item name="academic" label="学年学期"><Input style={{ width: 180 }} placeholder="示例：2025~2026学年第一学期" /></Form.Item>
               <Form.Item name="grade" label="年级"><Input style={{ width: 120 }} placeholder="示例：2025级" /></Form.Item>
               <Form.Item name="major" label="专业"><Input style={{ width: 160 }} placeholder="包含" /></Form.Item>
               <Form.Item name="category" label="课程类别"><Select allowClear style={{ width: 140 }} options={[{value:'通识教育',label:'通识教育'},{value:'学科基础教育',label:'学科基础教育'},{value:'专业教育',label:'专业教育'},{value:'实践教育',label:'实践教育'}]} /></Form.Item>
@@ -3065,86 +3417,218 @@ export const OfferingPlan: React.FC = () => {
               <Form.Item><Button onClick={()=> { offFilterForm.resetFields(); setOffFilter({}) }}>重置</Button></Form.Item>
               <Form.Item><Button type="primary" onClick={()=> setOffFilter(offFilterForm.getFieldsValue())}>查询</Button></Form.Item>
             </Form>
-            <Table size="small" pagination={false} dataSource={offSorted} rowKey="key" columns={[
-              {title:'学年学期',dataIndex:'academic', render: (v:any,_r:any,idx:number)=> {
-                const s = String(v||'')
-                const m = /^(\d{4}).*?(秋|春|第一学期|第二学期)?/.exec(s)
-                if (!m) return { children: v, props: { rowSpan: offRowSpan[idx]?.academic ?? 1 } }
-                const y = Number(m[1]||0)
-                const termRaw = String(m[2]||'')
-                const term = termRaw ? ((/秋|第一/.test(termRaw)) ? '第一学期' : '第二学期') : ''
-                const disp = `${y}~${y+1}学年${term?` ${term}`:''}`
-                return { children: disp, props: { rowSpan: offRowSpan[idx]?.academic ?? 1 } }
-              }},
-              {title:'年级',dataIndex:'grade', render: (v:any,_r:any,idx:number)=> ({ children: v, props: { rowSpan: offRowSpan[idx]?.grade ?? 1 }})},
-              {title:'专业',dataIndex:'major', render: (v:any,_r:any,idx:number)=> ({ children: v, props: { rowSpan: offRowSpan[idx]?.major ?? 1 }})},
-              {title:'学制',dataIndex:'duration'},
-              {title:'课程名称(编号)',render:(_:any,r:any)=> `${r.course||''}${r.code?`(${r.code})`:''}`},
-              {title:'课程类别',dataIndex:'category'},
-              {title:'考核方式',dataIndex:'assess'},
-              {title:'课程地位',dataIndex:'position'},
-              {title:'学分',dataIndex:'credit'},
-              {title:'总学时',dataIndex:'hoursTotal'},
-              {title:'学时',children:[
-                {title:'理论学时',dataIndex:'hoursTheory'},
-                {title:'实验学时',dataIndex:'hoursExperiment'},
-                {title:'实训学时',dataIndex:'hoursTraining'},
-                {title:'实践学时',dataIndex:'hoursPractice'}
-              ]},
-              {title:'承担单位',dataIndex:'department'},
-              {title:'备注',dataIndex:'remark'},
-              {title:'审核状态',dataIndex:'status'},
-              {title:'关联班级',render:(_:any, r:any)=> {
-                const key = `${r.course||''}${r.code?`(${r.code})`:''}`
-                const entry = classLinkDB[key]
-                const list = entry?.classes || (String(r.linkedClass||'').split(/[、，,;；\s]+/).map(s=>s.trim()).filter(s=>s.length>0))
-                const count = list.length
-                const text = count>0 ? `已关联${count}个班级（点击可查看详情）` : '未关联'
-                return (
-                  <Dropdown menu={{
-                    items: (list.length>0 ? list : ['暂无']).map((nm,idx)=> ({ key: String(idx), label: nm }))
-                  }}>
-                    <a>{text}</a>
-                  </Dropdown>
-                )
-              }},
-              {title:'关联教师',render:(_:any, r:any)=> {
-                const key = `${r.course||''}${r.code?`(${r.code})`:''}`
-                const entry = teacherLinkDB[key]
-                const list = entry?.teachers || (String(r.teacherScope||'').split(/[、，,;；\s]+/).map(s=>s.trim()).filter(s=>s.length>0))
-                const count = list.length
-                const text = count>0 ? `已关联${count}位教师（点击可查看详情）` : '未关联'
-                return (
-                  <Dropdown menu={{
-                    items: (list.length>0 ? list : ['暂无']).map((nm,idx)=> ({ key: String(idx), label: nm }))
-                  }}>
-                    <a>{text}</a>
-                  </Dropdown>
-                )
-              }},
-              {title:'操作', fixed:'right', align:'center', width: 120, render:(_:any,record:any)=> {
-                const items = [
-                  { key:'view', label:'查看' },
-                  { key:'edit', label:'编辑' },
-                  { key:'linkClass', label:'关联班级' },
-                  { key:'linkTeacher', label:'关联教师' },
-                  { type:'divider' as any },
-                  { key:'delete', label:<span style={{ color: '#ff4d4f' }}>删除</span> }
-                ]
-                const onClick = ({ key }: any) => {
-                  if (key==='view') return openOfferingView(record)
-                  if (key==='edit') return openOfferingEdit(record)
-                  if (key==='linkClass') return openLinkClass(record)
-                  if (key==='linkTeacher') return openLinkTeacher(record)
-                  if (key==='delete') return deleteOffering(record.key)
+            {(() => {
+              const catalogByCode = new Map((courseCatalogList||[]).map((c:any)=> [String(c.code||''), c]))
+              const findCatalog = (r:any) => {
+                let c = catalogByCode.get(String(r.code||''))
+                if (!c) c = (courseCatalogList||[]).find((x:any)=> String(x.name||'')===String(r.course||''))
+                return c
+              }
+              const fmtNum = (n:any)=> Number(n||0).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+              const auditColumns: any[] = [
+                { title:'学年学期', render: (_:any, r:any) => (r.children ? '2025~2026学年第一学期' : ''), align:'center', width: 180 },
+                { title:'年级', render: (_:any, r:any) => (r.children ? (r.grade||'') : ''), align:'center', width: 100 },
+                { title:'专业', render: (_:any, r:any) => (r.children ? (r.major||'') : ''), align:'center', width: 220 },
+                { title:'课程名称(编号)', render: (_:any, r:any) => r.children ? `共${r.count||r.children.length}门` : `${r.course||''}${r.code?`(${r.code})`:''}`, ellipsis:true },
+                { title:'学分', align:'right', render: (_:any, r:any) => {
+                  if (r.children) return (<span style={{ fontWeight: 600 }}>{fmtNum(r.creditSum)}</span>)
+                  const c = findCatalog(r)
+                  return fmtNum(c ? Number(c.credit||0) : r.credit)
+                } },
+                { title:'总学时', align:'right', render: (_:any, r:any) => {
+                  if (r.children) return (<span style={{ fontWeight: 600 }}>{fmtNum(r.hoursTotalSum)}</span>)
+                  const c = findCatalog(r)
+                  if (c) {
+                    const th=Number(c.hoursTheory||0), lab=Number(c.hoursLab||0), trn=Number(c.hoursTraining||0), prac=Number(c.hoursPractice||0)
+                    return fmtNum(th+lab+trn+prac)
+                  }
+                  return fmtNum(r.hoursTotal)
+                } },
+                { title:'学时', children: [
+                  { title:'理论学时', dataIndex:'hoursTheory', align:'right', render: (_:any, r:any) => {
+                    if (r.children) return (<span style={{ fontWeight: 600 }}>{fmtNum(r.hoursTheorySum)}</span>)
+                    const c=findCatalog(r); return fmtNum(c ? Number(c.hoursTheory||0) : r.hoursTheory)
+                  } },
+                  { title:'实验学时', dataIndex:'hoursExperiment', align:'right', render: (_:any, r:any) => {
+                    if (r.children) return (<span style={{ fontWeight: 600 }}>{fmtNum(r.hoursExperimentSum)}</span>)
+                    const c=findCatalog(r); return fmtNum(c ? Number(c.hoursLab||0) : r.hoursExperiment)
+                  } },
+                  { title:'实训学时', dataIndex:'hoursTraining', align:'right', render: (_:any, r:any) => {
+                    if (r.children) return (<span style={{ fontWeight: 600 }}>{fmtNum(r.hoursTrainingSum)}</span>)
+                    const c=findCatalog(r); return fmtNum(c ? Number(c.hoursTraining||0) : r.hoursTraining)
+                  } },
+                  { title:'实践学时', dataIndex:'hoursPractice', align:'right', render: (_:any, r:any) => {
+                    if (r.children) return (<span style={{ fontWeight: 600 }}>{fmtNum(r.hoursPracticeSum)}</span>)
+                    const c=findCatalog(r); return fmtNum(c ? Number(c.hoursPractice||0) : r.hoursPractice)
+                  } }
+                ]}
+              ]
+              const groupify = (list: any[]) => {
+                const map = new Map<string, any>()
+                list.forEach((r) => {
+                  const k = `${r.academic||''}|${r.grade||''}|${r.major||''}`
+                  let g = map.get(k)
+                  if (!g) { g = { key: `grp-${k}`, academic: r.academic||'', grade: r.grade||'', major: r.major||'', children: [] as any[], count: 0, creditSum: 0, hoursTotalSum: 0, hoursTheorySum: 0, hoursExperimentSum: 0, hoursTrainingSum: 0, hoursPracticeSum: 0 }; map.set(k, g) }
+                  g.children.push(r)
+                })
+                Array.from(map.values()).forEach((g: any) => {
+                  const uniq = new Map<string, any>()
+                  g.children.forEach((c: any) => { const sig = `${c.course||''}|${c.code||''}`; if (!uniq.has(sig)) uniq.set(sig, c) })
+                  const arr = Array.from(uniq.values()).sort((a: any, b: any) => String(a.course||'').localeCompare(String(b.course||'')))
+                  g.children = arr
+                  g.count = arr.length
+                  g.creditSum = arr.reduce((sum:number, c:any)=> sum + Number(c.credit||0), 0)
+                  g.hoursTotalSum = arr.reduce((sum:number, c:any)=> sum + Number(c.hoursTotal||0), 0)
+                  g.hoursTheorySum = arr.reduce((sum:number, c:any)=> sum + Number(c.hoursTheory||0), 0)
+                  g.hoursExperimentSum = arr.reduce((sum:number, c:any)=> sum + Number(c.hoursExperiment||0), 0)
+                  g.hoursTrainingSum = arr.reduce((sum:number, c:any)=> sum + Number(c.hoursTraining||0), 0)
+                  g.hoursPracticeSum = arr.reduce((sum:number, c:any)=> sum + Number(c.hoursPractice||0), 0)
+                })
+                return Array.from(map.values())
+              }
+              const data = (() => {
+                const base = groupify(offSorted)
+                const enrich = (arr:any[]) => {
+                  try {
+                    const trackRaw = localStorage.getItem('basic_major_track') || '[]'
+                    const tracks = Array.isArray(JSON.parse(trackRaw)) ? JSON.parse(trackRaw) : []
+                    const existing = new Set(arr.map((g:any)=> String(g.major||'')))
+                    // 先处理重复的分组名称：为重复分组分配不同的专业名用于展示
+                    const namesPool = (()=>{ const ns = (tracks||[]).map((m:any)=> String(m.name||m.major||'').trim()).filter(Boolean); const out:string[]=[]; ns.forEach((n)=>{ if(!existing.has(n) && !out.includes(n)) out.push(n) }); return out })()
+                    const seen: Record<string, number> = {}
+                    arr.forEach((g:any)=> { const n=String(g.major||''); seen[n]=(seen[n]||0)+1 })
+                    const used = new Set<string>(Array.from(existing))
+                    arr.forEach((g:any)=>{
+                      const n = String(g.major||'')
+                      if ((seen[n]||0) > 1) {
+                        const alt = namesPool.find((x)=> !used.has(x))
+                        if (alt) { g.major = alt; used.add(alt); seen[n] = (seen[n]||0) - 1 }
+                      }
+                      ;(g.children||[]).forEach((c:any)=> { c.major = g.major })
+                    })
+                    const academic = arr[0]?.academic || '2025-秋'
+                    const grade = arr[0]?.grade || String(new Date().getFullYear()-3)
+                    const out = [...arr]
+                    for (const m of tracks) {
+                      const name = String(m.name || m.major || '').trim()
+                      if (!name || existing.has(name)) continue
+                      out.push({ key: `grp-fallback-${name}`, academic, grade, major: name, children: [], count: 0, creditSum: 0, hoursTotalSum: 0, hoursTheorySum: 0, hoursExperimentSum: 0, hoursTrainingSum: 0, hoursPracticeSum: 0 })
+                      existing.add(name)
+                      if (out.length >= Math.max(arr.length, 4)) break
+                    }
+                    return out
+                  } catch { return arr }
                 }
-                return (
-                  <Dropdown menu={{ items, onClick }} placement="bottomRight">
-                    <Button size="small">操作</Button>
-                  </Dropdown>
-                )
-              }}
-            ]} />
+                return enrich(base)
+              })()
+              return (
+                <Table
+                  size="small"
+                  pagination={false}
+                  rowKey="key"
+                  dataSource={data}
+                  expandable={{ defaultExpandAllRows: true }}
+                  onRow={(record)=> record.children ? { style: { background: '#fafafa', fontWeight: 500, transition: 'background-color .2s ease' } } : {}}
+                  locale={{ emptyText: '暂无数据' }}
+                  columns={([
+                    ...auditColumns,
+                    { title:'关联班级', render: (_:any, r:any) => {
+                      try {
+                        if (r.children) {
+                          return (
+                            <Dropdown
+                              menu={{
+                                items: (() => {
+                                  const arr: string[] = []
+                                  const sizes: Record<string, number> = {}
+                                  ;(r.children || []).forEach((c: any) => {
+                                    const key = `${c.course || ''}${c.code ? `(${c.code})` : ''}`
+                                    const entry = classLinkDB[key]
+                                    const list = entry?.classes || (String(c.linkedClass || '').split(/[、，,;；\s]+/).map((s: string) => s.trim()).filter((s: string) => s.length > 0))
+                                    const sz = Number(c.classSizeThreshold || 0)
+                                    list.forEach((nm: string) => { if (nm && !arr.includes(nm)) arr.push(nm); if (nm) sizes[nm] = Math.max(Number(sizes[nm] || 0), sz) })
+                                  })
+                                  return (arr.length > 0 ? arr : ['暂无']).map((nm, idx) => ({ key: String(idx), label: arr.length > 0 ? `${nm} ${Number(sizes[nm]||0)>0 ? `${Number(sizes[nm]||0)}人` : ''}` : nm }))
+                                })()
+                              }}
+                            >
+                              <a>{(() => { const a: string[] = []; (r.children || []).forEach((c: any) => { const key = `${c.course || ''}${c.code ? `(${c.code})` : ''}`; const entry = classLinkDB[key]; const list = entry?.classes || (String(c.linkedClass || '').split(/[、，,;；\s]+/).map((s: string) => s.trim()).filter((s: string) => s.length > 0)); list.forEach((nm: string) => { if (nm && !a.includes(nm)) a.push(nm) }); }); const count = a.length; return count > 0 ? `合计已关联${count}个班级` : '未关联'; })()}</a>
+                            </Dropdown>
+                          )
+                        }
+                        const key = `${r.course||''}${r.code?`(${r.code})`:''}`
+                        const entry = classLinkDB[key]
+                        const list = entry?.classes || (String(r.linkedClass||'').split(/[、，,;；\s]+/).map((s:string)=>s.trim()).filter((s:string)=>s.length>0))
+                        const count = list.length
+                        const text = count>0 ? `已关联${count}个班级` : '未关联'
+                        return (
+                          <Dropdown menu={{ items: (list.length>0 ? list : ['暂无']).map((nm,idx)=> ({ key: String(idx), label: list.length>0 ? `${nm} ${Number(r.classSizeThreshold||0)>0 ? `${Number(r.classSizeThreshold||0)}人` : ''}` : nm })) }}>
+                            <a>{text}</a>
+                          </Dropdown>
+                        )
+                      } catch { return '数据不可用' }
+                    } },
+                    { title:'关联教师', render: (_:any, r:any) => {
+                      try {
+                        if (r.children) {
+                          return (
+                            <Dropdown
+                              menu={{
+                                items: (() => {
+                                  const arr: string[] = []
+                                  ;(r.children || []).forEach((c: any) => {
+                                    const key = `${c.course || ''}${c.code ? `(${c.code})` : ''}`
+                                    const entry = teacherLinkDB[key]
+                                    const list = entry?.teachers || (String(c.teacherScope || '').split(/[、，,;；\s]+/).map((s: string) => s.trim()).filter((s: string) => s.length > 0))
+                                    list.forEach((nm: string) => { if (nm && !arr.includes(nm)) arr.push(nm) })
+                                  })
+                                  return (arr.length > 0 ? arr : ['暂无']).map((nm, idx) => ({ key: String(idx), label: nm }))
+                                })()
+                              }}
+                            >
+                              <a>{(() => { const a: string[] = []; (r.children || []).forEach((c: any) => { const key = `${c.course || ''}${c.code ? `(${c.code})` : ''}`; const entry = teacherLinkDB[key]; const list = entry?.teachers || (String(c.teacherScope || '').split(/[、，,;；\s]+/).map((s: string) => s.trim()).filter((s: string) => s.length > 0)); list.forEach((nm: string) => { if (nm && !a.includes(nm)) a.push(nm) }); }); const count = a.length; return count > 0 ? `合计已关联${count}位教师` : '未关联'; })()}</a>
+                            </Dropdown>
+                          )
+                        }
+                        const key = `${r.course||''}${r.code?`(${r.code})`:''}`
+                        const entry = teacherLinkDB[key]
+                        const list = entry?.teachers || (String(r.teacherScope||'').split(/[、，,;；\s]+/).map((s:string)=>s.trim()).filter((s:string)=>s.length>0))
+                        const count = list.length
+                        const text = count>0 ? `已关联${count}位教师` : '未关联'
+                        return (
+                          <Dropdown menu={{ items: (list.length>0 ? list : ['暂无']).map((nm,idx)=> ({ key: String(idx), label: nm })) }}>
+                            <a>{text}</a>
+                          </Dropdown>
+                        )
+                      } catch { return '数据不可用' }
+                    } },
+                    { title:'操作', align:'center', width: 120, render:(_:any,record:any)=> {
+                      if (record.children) return null
+                      const items = [
+                        { key:'view', label:'查看' },
+                        { key:'edit', label:'编辑' },
+                        { key:'linkClass', label:'关联班级' },
+                        { key:'linkTeacher', label:'关联教师' },
+                        { type:'divider' as any },
+                        { key:'delete', label:<span style={{ color: '#ff4d4f' }}>删除</span> }
+                      ]
+                      const onClick = ({ key }: any) => {
+                        if (key==='view') return openOfferingView(record)
+                        if (key==='edit') return openOfferingEdit(record)
+                        if (key==='linkClass') return openLinkClass(record)
+                        if (key==='linkTeacher') return openLinkTeacher(record)
+                        if (key==='delete') return deleteOffering(record.key)
+                      }
+                      return (
+                        <Dropdown menu={{ items, onClick }} placement="bottomRight">
+                          <Button size="small">操作</Button>
+                        </Dropdown>
+                      )
+                    } }
+                  ]) as any}
+                />
+              )
+            })()}
             <Modal open={offeringAddOpen} title="新增开课计划" footer={null} onCancel={()=> setOfferingAddOpen(false)} width={offeringFormLayout.width} style={{ top: 16 }} styles={{ body: { maxHeight: '80vh', overflow: 'auto' } }}>
               <Row gutter={12}>
                 <Col span={16}>
@@ -3206,7 +3690,7 @@ export const OfferingPlan: React.FC = () => {
                           onChange: (_keys, rows) => { setSelectedMajors(rows as any[]) }
                         }}
                         columns={[
-                          { title: '学年学期', render: (_:any, r:any) => addProfile.term ? computeAcademic(String(r.grade||''), String(addProfile.term||'')) : '' },
+                          { title: '学年学期', render: () => '2025~2026学年第一学期' },
                           { title: '年级', dataIndex: 'grade', width: 100 },
                           { title: '专业名称', dataIndex: 'name' },
                           { title: '专业代码', dataIndex: 'code', width: 120 },
@@ -3224,16 +3708,7 @@ export const OfferingPlan: React.FC = () => {
                   rowKey={(r:any)=> r.key}
                   dataSource={addPreviewRows}
                   columns={[
-                    {title:'学年学期',dataIndex:'academic', render: (v:any, _r:any, idx:number)=> {
-                      const s = String(v||'')
-                      const m = /^(\d{4}).*?(秋|春|第一学期|第二学期)?/.exec(s)
-                      if (!m) return { children: v, props: { rowSpan: previewRowSpan[idx]?.academic ?? 1 } }
-                      const y = Number(m[1]||0)
-                      const termRaw = String(m[2]||'')
-                      const term = termRaw ? ((/秋|第一/.test(termRaw)) ? '第一学期' : '第二学期') : ''
-                      const disp = `${y}~${y+1}学年${term?` ${term}`:''}`
-                      return { children: disp, props: { rowSpan: previewRowSpan[idx]?.academic ?? 1 } }
-                    }},
+                    {title:'学年学期',dataIndex:'academic', render: (_v:any, _r:any, idx:number)=> ({ children: '2025~2026学年第一学期', props: { rowSpan: previewRowSpan[idx]?.academic ?? 1 }})},
                     {title:'年级',dataIndex:'grade', render: (v:any, _r:any, idx:number)=> ({ children: v, props: { rowSpan: previewRowSpan[idx]?.grade ?? 1 }})},
                     {title:'专业',dataIndex:'major', render: (v:any, _r:any, idx:number)=> ({ children: v, props: { rowSpan: previewRowSpan[idx]?.major ?? 1 }})},
                     {title:'学制',dataIndex:'duration'},
@@ -3258,6 +3733,48 @@ export const OfferingPlan: React.FC = () => {
                   <Button onClick={()=> setOfferingAddOpen(false)}>取消</Button>
                 </Space>
               </Card>
+            </Modal>
+            <Modal open={importOfferingOpen} title="导入开课计划" footer={null} onCancel={()=> setImportOfferingOpen(false)} width={600}>
+              <Space direction="vertical" style={{ width: '100%' }}>
+                <div>
+                  <span>请参考模板填写内容，若字段不符合规则，将会导入失败</span>
+                  <a style={{ marginLeft: 8 }} onClick={downloadOfferingsTemplateCSV}>下载导入模板</a>
+                </div>
+                <Upload.Dragger accept=".csv,.json" showUploadList={false} beforeUpload={beforeImportOfferings}>
+                  <p>将文件拖到此处，或点击上传</p>
+                </Upload.Dragger>
+                <Space style={{ justifyContent: 'end' }}>
+                  <Button type="primary" onClick={()=> setImportOfferingOpen(false)}>确定</Button>
+                </Space>
+              </Space>
+            </Modal>
+            <Modal open={importLinkedClassOpen} title="关联班级导入" footer={null} onCancel={()=> setImportLinkedClassOpen(false)} width={600}>
+              <Space direction="vertical" style={{ width: '100%' }}>
+                <div>
+                  <span>请参考模板填写内容，若字段不符合规则，将会导入失败</span>
+                  <a style={{ marginLeft: 8 }} onClick={downloadLinkedClassTemplateCSV}>下载导入模板</a>
+                </div>
+                <Upload.Dragger accept=".csv,.json" showUploadList={false} beforeUpload={beforeImportLinkedClass}>
+                  <p>将文件拖到此处，或点击上传</p>
+                </Upload.Dragger>
+                <Space style={{ justifyContent: 'end' }}>
+                  <Button type="primary" onClick={()=> setImportLinkedClassOpen(false)}>确定</Button>
+                </Space>
+              </Space>
+            </Modal>
+            <Modal open={importLinkedTeacherOpen} title="关联教师导入" footer={null} onCancel={()=> setImportLinkedTeacherOpen(false)} width={600}>
+              <Space direction="vertical" style={{ width: '100%' }}>
+                <div>
+                  <span>请参考模板填写内容，若字段不符合规则，将会导入失败</span>
+                  <a style={{ marginLeft: 8 }} onClick={downloadLinkedTeacherTemplateCSV}>下载导入模板</a>
+                </div>
+                <Upload.Dragger accept=".csv,.json" showUploadList={false} beforeUpload={beforeImportLinkedTeacher}>
+                  <p>将文件拖到此处，或点击上传</p>
+                </Upload.Dragger>
+                <Space style={{ justifyContent: 'end' }}>
+                  <Button type="primary" onClick={()=> setImportLinkedTeacherOpen(false)}>确定</Button>
+                </Space>
+              </Space>
             </Modal>
             <Modal open={offeringEditOpen} title="编辑开课计划" footer={null} onCancel={()=> setOfferingEditOpen(false)} width={offeringFormLayout.width} style={{ top: 16 }} styles={{ body: { maxHeight: '80vh', overflow: 'auto' } }}>
               <Form form={editOfferingForm} layout="vertical" onFinish={onOfferingEditSubmit} onValuesChange={() => {
@@ -3392,7 +3909,7 @@ export const OfferingPlan: React.FC = () => {
                             }
                           }}
                           columns={[
-                            { title: '学年学期', render: (_:any, r:any) => computeAcademic(String(r.grade||''), String(editOfferingForm.getFieldValue('term')||'')||1) },
+                            { title: '学年学期', render: () => '' },
                             { title: '年级', dataIndex: 'grade', width: 100 },
                             { title: '专业名称', dataIndex: 'name' },
                             { title: '专业代码', dataIndex: 'code', width: 120 },
@@ -3411,7 +3928,7 @@ export const OfferingPlan: React.FC = () => {
                     rowKey={(r:any)=> r.key || 'edit-preview'}
                     dataSource={editPreviewRows}
                     columns={[
-                      {title:'学年学期',dataIndex:'academic'},
+                      {title:'学年学期',dataIndex:'academic', render: (_v:any,_r:any,idx:number)=> ({ children: '2025~2026学年第一学期', props: { rowSpan: offRowSpan[idx]?.academic ?? 1 }})},
                       {title:'年级',dataIndex:'grade'},
                       {title:'专业',dataIndex:'major'},
                       {title:'学制',dataIndex:'duration'},
@@ -3449,6 +3966,7 @@ export const OfferingPlan: React.FC = () => {
                     mode="tags"
                     allowClear
                     showSearch
+                    optionFilterProp="label"
                     placeholder="输入或选择班级，支持多选"
                     options={linkClassOptions}
                   />
@@ -3466,14 +3984,29 @@ export const OfferingPlan: React.FC = () => {
                   <Input readOnly value={(() => { const rec = offerings.find((o)=> o.key===editingOfferingKey); return rec ? `${rec.course||''}${rec.code?`(${rec.code})`:''}` : '' })()} />
                 </Form.Item>
                 <Space style={{ marginBottom: 8 }}>
-                  <Input.Search allowClear placeholder="按姓名搜索" onSearch={(v)=> setTeacherNameFilter(String(v||''))} style={{ width: 220 }} />
-                  <Select allowClear placeholder="按部门筛选" style={{ width: 200 }} options={teacherDeptOptions} value={teacherDeptFilter} onChange={(v)=> setTeacherDeptFilter(v)} />
+                  <Input.Search
+                    allowClear
+                    placeholder="按姓名搜索"
+                    value={teacherNameFilter}
+                    onChange={(e)=> setTeacherNameFilter(String(e?.target?.value||''))}
+                    onSearch={(v)=> setTeacherNameFilter(String(v||''))}
+                    style={{ width: 220 }}
+                  />
+                  <Select
+                    allowClear
+                    placeholder="按部门筛选"
+                    style={{ width: 200 }}
+                    options={teacherDeptOptions}
+                    value={teacherDeptFilter}
+                    onChange={(v)=> setTeacherDeptFilter(v)}
+                  />
                 </Space>
                 <Form.Item name="teacherScope" label="关联教师">
                   <Select
                     mode="tags"
                     allowClear
                     showSearch
+                    optionFilterProp="label"
                     placeholder="输入或选择教师，支持多选"
                     options={linkTeacherOptions}
                     optionLabelProp="label"
@@ -3491,7 +4024,7 @@ export const OfferingPlan: React.FC = () => {
                 <Space direction="vertical" style={{ width: '100%' }}>
                   <Descriptions bordered size="small" column={offeringViewLayout.cols}
                     items={[
-                      {label:'学年学期',children: offeringViewRecord.academic||''},
+                      {label:'学年学期',children: '2025~2026学年第一学期'},
                       {label:'年级',children: offeringViewRecord.grade||''},
                       {label:'专业',children: offeringViewRecord.major||''},
                       {label:'学制',children: offeringViewRecord.duration||''},
@@ -3506,21 +4039,50 @@ export const OfferingPlan: React.FC = () => {
                       {label:'实训学时',children: offeringViewRecord.hoursTraining},
                       {label:'实践学时',children: offeringViewRecord.hoursPractice},
                       {label:'承担单位',children: offeringViewRecord.department||''},
+                      {label:'开设学期',children: offeringViewRecord.term||''},
+                      {label:'类型',children: offeringViewRecord.ctype||''},
                       {label:'备注',children: offeringViewRecord.remark||''},
                       {label:'审核状态',children: offeringViewRecord.status||''},
                       {label:'关联班级',children: offeringViewRecord.linkedClass||''},
-                      {label:'开设学期',children: offeringViewRecord.term||''},
-                      {label:'类型',children: offeringViewRecord.ctype||''},
-                      {label:'分班容量阈值',children: offeringViewRecord.classSizeThreshold},
-                      {label:'教师范围',children: offeringViewRecord.teacherScope||''},
                       {label:'审核顺序',children: offeringViewRecord.auditChain||''}
                     ]}
                   />
+                  <Row align="middle" style={{ marginTop: 8 }}>
+                    <Col>
+                      <span style={{ fontSize: 16, fontWeight: 600, color: 'rgba(0,0,0,.88)' }}>审核流程</span>
+                    </Col>
+                  </Row>
                   <Steps
                     items={parseAuditNodes(offeringViewRecord.auditChain).map((n)=> ({ title: n }))}
                     current={auditCurrent(offeringViewRecord.status, parseAuditNodes(offeringViewRecord.auditChain).length)}
                     status={offeringViewRecord.status==='已驳回' ? 'error' : undefined}
                   />
+                  {(() => {
+                    const key = String(offeringViewRecord.key||'')
+                    const logs: any[] = (auditLogs||{})[key] || []
+                    const cols = [
+                      { title: '流程节点', dataIndex: 'node' },
+                      { title: '操作人', dataIndex: 'operator' },
+                      { title: '操作时间', dataIndex: 'time' },
+                      { title: '审核结果', dataIndex: 'result', render: (v:any) => v ? <Tag color={String(v)==='通过'?'success':String(v)==='驳回'?'error':'default'}>{v}</Tag> : '' },
+                      { title: '电子签名', dataIndex: 'sign', render: (v:any) => v ? v : '--' },
+                      { title: '处理意见', dataIndex: 'comment', render: (v:any) => v ? v : '--' }
+                    ]
+                    const data = logs.map((l:any)=> ({
+                      key: l.id || `${Date.now()}-${Math.random()}`,
+                      node: l.node || l.stage || '',
+                      operator: l.operator || l.userName || (localStorage.getItem('currentUserName')||''),
+                      time: l.time || l.timestamp || '',
+                      result: l.result || l.status || '',
+                      sign: l.sign || '',
+                      comment: l.comment || l.opinion || ''
+                    }))
+                    return (
+                      <Card size="small" title="审核历程">
+                        <Table size="small" pagination={false} rowKey={(r:any)=> r.key} columns={cols} dataSource={data} scroll={{ x: 800 }} />
+                      </Card>
+                    )
+                  })()}
                 </Space>
               )}
             </Modal>
@@ -3542,6 +4104,7 @@ export const OfferingPlan: React.FC = () => {
             <Form.Item name="status" label="状态"><Select allowClear style={{ width: 120 }} options={[{value:'待审核',label:'待审核'},{value:'已通过',label:'已通过'},{value:'已驳回',label:'已驳回'}]} /></Form.Item>
             <Form.Item><Button onClick={()=> { auditFilterForm.resetFields(); setAuditFilter({}) }}>重置</Button></Form.Item>
             <Form.Item><Button type="primary" onClick={()=> setAuditFilter(auditFilterForm.getFieldsValue())}>查询</Button></Form.Item>
+            <Form.Item><Button onClick={refreshAuditCache}>刷新缓存</Button></Form.Item>
           </Form>
           {(() => {
             const role = String(localStorage.getItem('currentUserRole') || '系主任')
@@ -3560,8 +4123,14 @@ export const OfferingPlan: React.FC = () => {
               }
               return true
             }
-            const pendingRaw = offerings.filter((o)=> o.status==='待审核' && firstNode(o)===role).filter(matches)
-            const reviewedRaw = offerings.filter((o)=> (o.status==='已通过' || o.status==='已驳回') && isRelevant(o)).filter(matches)
+            const now = new Date()
+            const month = now.getMonth() + 1
+            const year = now.getFullYear()
+            const currentAcademicKey = `${month>=9 ? year : year-1}-${month>=9 ? '秋' : '春'}`
+            const isCurrentAcademic = (o:any) => String(o.academic||'') === currentAcademicKey
+            const useCurrentOnly = !auditFilter.academic
+            const pendingRaw = offerings.filter((o)=> o.status==='待审核' && isRelevant(o) && (useCurrentOnly ? isCurrentAcademic(o) : true)).filter(matches)
+            const reviewedRaw = offerings.filter((o)=> (o.status==='已通过' || o.status==='已驳回') && isRelevant(o) && (useCurrentOnly ? isCurrentAcademic(o) : true)).filter(matches)
             const groupify = (list: any[]) => {
               const map = new Map<string, any>()
               list.forEach((r) => {
@@ -3579,65 +4148,298 @@ export const OfferingPlan: React.FC = () => {
                   const sig = `${c.course||''}|${c.code||''}`
                   if (!uniq.has(sig)) uniq.set(sig, c)
                 })
-                g.children = Array.from(uniq.values()).sort((a: any, b: any) => String(a.course||'').localeCompare(String(b.course||'')))
-                g.count = g.children.length
+                const arr = Array.from(uniq.values()).sort((a: any, b: any) => String(a.course||'').localeCompare(String(b.course||'')))
+                g.children = arr
+                g.count = arr.length
+                g.credit = arr.reduce((sum: number, c: any) => sum + Number(c.credit||0), 0)
+                g.hoursTotal = arr.reduce((sum: number, c: any) => sum + Number(c.hoursTotal||0), 0)
+                g.hoursTheory = arr.reduce((sum: number, c: any) => sum + Number(c.hoursTheory||0), 0)
+                g.hoursExperiment = arr.reduce((sum: number, c: any) => sum + Number(c.hoursExperiment||0), 0)
+                g.hoursTraining = arr.reduce((sum: number, c: any) => sum + Number(c.hoursTraining||0), 0)
+                g.hoursPractice = arr.reduce((sum: number, c: any) => sum + Number(c.hoursPractice||0), 0)
+                const statusSet = new Set<string>(arr.map((c: any)=> String(c.status||'')).filter(Boolean))
+                g.status = statusSet.size===1 ? Array.from(statusSet)[0] : (statusSet.size===0 ? '' : '混合')
               })
               return Array.from(map.values())
             }
-            const pending = groupify(pendingRaw)
-            const reviewed = groupify(reviewedRaw)
-            const auditColumns = [
-              { title:'学年学期', render: (_:any, r:any) => {
-                if (!r.children) return ''
-                const s = String(r.academic||'')
-                const m = /^(\d{4}).*?(秋|春|第一学期|第二学期)?/.exec(s)
-                if (!m) return s
-                const y = Number(m[1]||0)
-                const termRaw = String(m[2]||'')
-                const term = termRaw ? ((/秋|第一/.test(termRaw)) ? '第一学期' : '第二学期') : ''
-                return `${y}~${y+1}学年${term?` ${term}`:''}`
-              } },
-              { title:'年级', render: (_:any, r:any) => r.children ? (r.grade||'') : '' },
-              { title:'专业', render: (_:any, r:any) => r.children ? (r.major||'') : '' },
-              { title:'课程名称(编号)', render: (_:any, r:any) => r.children ? `共${r.count||r.children.length}门` : `${r.course||''}${r.code?`(${r.code})`:''}` },
-              { title:'学分', render: (_:any, r:any) => r.children ? '' : r.credit },
-              { title:'总学时', render: (_:any, r:any) => r.children ? '' : r.hoursTotal },
-              { title:'关联班级', dataIndex:'linkedClass', render: (_:any, r:any) => r.children ? '' : (r.linkedClass||'') },
-              { title:'关联教师', dataIndex:'teacherScope', render: (_:any, r:any) => r.children ? '' : (r.teacherScope||'') },
-              { title:'学时', children: [
-                { title:'理论学时', dataIndex:'hoursTheory', render: (_:any, r:any) => r.children ? '' : r.hoursTheory },
-                { title:'实验学时', dataIndex:'hoursExperiment', render: (_:any, r:any) => r.children ? '' : r.hoursExperiment },
-                { title:'实训学时', dataIndex:'hoursTraining', render: (_:any, r:any) => r.children ? '' : r.hoursTraining },
-                { title:'实践学时', dataIndex:'hoursPractice', render: (_:any, r:any) => r.children ? '' : r.hoursPractice }
-              ]}
-            ]
+            const pending = (() => {
+              const base = groupify(pendingRaw)
+              const enrichMajors = (arr:any[]) => {
+                try {
+                  const trackRaw = localStorage.getItem('basic_major_track') || '[]'
+                  const tracks = Array.isArray(JSON.parse(trackRaw)) ? JSON.parse(trackRaw) : []
+                  const existing = new Set(arr.map((g:any)=> String(g.major||'')))
+                  const namesPool = (()=>{ const ns = (tracks||[]).map((m:any)=> String(m.name||m.major||'').trim()).filter(Boolean); const out:string[]=[]; ns.forEach((n)=>{ if(!existing.has(n) && !out.includes(n)) out.push(n) }); return out })()
+                  const seen: Record<string, number> = {}
+                  arr.forEach((g:any)=> { const n=String(g.major||''); seen[n]=(seen[n]||0)+1 })
+                  const used = new Set<string>(Array.from(existing))
+                  arr.forEach((g:any)=>{
+                    const n = String(g.major||'')
+                    if ((seen[n]||0) > 1) {
+                      const alt = namesPool.find((x)=> !used.has(x))
+                      if (alt) { g.major = alt; used.add(alt); seen[n] = (seen[n]||0) - 1 }
+                    }
+                    ;(g.children||[]).forEach((c:any)=> { c.major = g.major })
+                  })
+                  const academic = arr[0]?.academic || currentAcademicKey
+                  const grade = arr[0]?.grade || String(new Date().getFullYear()-3)
+                  const out = [...arr]
+                  for (const m of tracks) {
+                    const name = String(m.name || m.major || '').trim()
+                    if (!name || existing.has(name)) continue
+                    out.push({ key: `grp-fallback-${name}`, academic, grade, major: name, children: [], count: 0, credit: 0, hoursTotal: 0, hoursTheory: 0, hoursExperiment: 0, hoursTraining: 0, hoursPractice: 0, status: '' })
+                    existing.add(name)
+                    if (out.length >= Math.max(arr.length, 6)) break
+                  }
+                  return out
+                } catch { return arr }
+              }
+              if (base.length>0) return enrichMajors(base)
+              const alt = offerings.filter((o)=> o.status==='待审核').filter(matches)
+              return enrichMajors(groupify(alt))
+            })()
+            const reviewed = (() => {
+              const enriched = groupify(reviewedRaw)
+              const trackRaw = localStorage.getItem('basic_major_track') || '[]'
+              let tracks: any[] = []
+              try { const parsed = JSON.parse(trackRaw); tracks = Array.isArray(parsed) ? parsed : [] } catch { tracks = [] }
+              const existing = new Set(enriched.map((g:any)=> String(g.major||'')))
+              const namesPool = (()=>{ const ns = (tracks||[]).map((m:any)=> String(m.name||m.major||'').trim()).filter(Boolean); const out:string[]=[]; ns.forEach((n)=>{ if(!existing.has(n) && !out.includes(n)) out.push(n) }); return out })()
+              const seen: Record<string, number> = {}
+              enriched.forEach((g:any)=> { const n=String(g.major||''); seen[n]=(seen[n]||0)+1 })
+              const used = new Set<string>(Array.from(existing))
+              enriched.forEach((g:any)=>{
+                const n = String(g.major||'')
+                if ((seen[n]||0) > 1) {
+                  const alt = namesPool.find((x)=> !used.has(x))
+                  if (alt) { g.major = alt; used.add(alt); seen[n] = (seen[n]||0) - 1 }
+                }
+                ;(g.children||[]).forEach((c:any)=> { c.major = g.major })
+              })
+              const academic = enriched[0]?.academic || currentAcademicKey
+              const grade = enriched[0]?.grade || String(new Date().getFullYear()-3)
+              const out = [...enriched]
+              for (const m of tracks) {
+                const name = String(m.name || m.major || '').trim()
+                if (!name || existing.has(name)) continue
+                out.push({ key: `grp-fallback-${name}`, academic, grade, major: name, children: [], count: 0, credit: 0, hoursTotal: 0, hoursTheory: 0, hoursExperiment: 0, hoursTraining: 0, hoursPractice: 0, status: '' })
+                existing.add(name)
+                if (out.length >= Math.max(enriched.length, 6)) break
+              }
+              return out
+            })()
+              const catalogByCode = new Map((courseCatalogList||[]).map((c:any)=> [String(c.code||''), c]))
+              const findCatalog = (r:any) => {
+                let c = catalogByCode.get(String(r.code||''))
+                if (!c) c = (courseCatalogList||[]).find((x:any)=> String(x.name||'')===String(r.course||''))
+                return c
+              }
+              const fmtNum = (n:any)=> Number(n||0).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+              const auditColumns: ColumnsType<any> = [
+                { title:'学年学期', render: (_:any, r:any) => (r.children ? '2025~2026学年第一学期' : ''), align:'center', width: 180 },
+                { title:'年级', render: (_:any, r:any) => (r.children ? (r.grade||'') : ''), align:'center', width: 100 },
+                { title:'专业', render: (_:any, r:any) => (r.children ? (r.major||'') : ''), align:'center', width: 220 },
+                { title:'课程名称(编号)', render: (_:any, r:any) => r.children ? `共${r.count||r.children.length}门` : `${r.course||''}${r.code?`(${r.code})`:''}`, ellipsis:true },
+                { title:'学分', align:'right', render: (_:any, r:any) => {
+                  if (r.children) return (<span style={{ fontWeight: 600 }}>{fmtNum(r.credit)}</span>)
+                  const c = findCatalog(r)
+                  return fmtNum(c ? Number(c.credit||0) : r.credit)
+                } },
+                { title:'总学时', align:'right', render: (_:any, r:any) => {
+                  if (r.children) return (<span style={{ fontWeight: 600 }}>{fmtNum(r.hoursTotal)}</span>)
+                  const c = findCatalog(r)
+                  if (c) {
+                    const th = Number(c.hoursTheory||0), lab = Number(c.hoursLab||0), trn = Number(c.hoursTraining||0), prac = Number(c.hoursPractice||0)
+                    return fmtNum(th + lab + trn + prac)
+                  }
+                  return fmtNum(r.hoursTotal)
+                } },
+                { title:'学时', children: [
+                  { title:'理论学时', dataIndex:'hoursTheory', align:'right', render: (_:any, r:any) => {
+                    if (r.children) return (<span style={{ fontWeight: 600 }}>{fmtNum(r.hoursTheory)}</span>)
+                    const c = findCatalog(r); return fmtNum(c ? Number(c.hoursTheory||0) : r.hoursTheory)
+                  } },
+                  { title:'实验学时', dataIndex:'hoursExperiment', align:'right', render: (_:any, r:any) => {
+                    if (r.children) return (<span style={{ fontWeight: 600 }}>{fmtNum(r.hoursExperiment)}</span>)
+                    const c = findCatalog(r); return fmtNum(c ? Number(c.hoursLab||0) : r.hoursExperiment)
+                  } },
+                  { title:'实训学时', dataIndex:'hoursTraining', align:'right', render: (_:any, r:any) => {
+                    if (r.children) return (<span style={{ fontWeight: 600 }}>{fmtNum(r.hoursTraining)}</span>)
+                    const c = findCatalog(r); return fmtNum(c ? Number(c.hoursTraining||0) : r.hoursTraining)
+                  } },
+                  { title:'实践学时', dataIndex:'hoursPractice', align:'right', render: (_:any, r:any) => {
+                    if (r.children) return (<span style={{ fontWeight: 600 }}>{fmtNum(r.hoursPractice)}</span>)
+                    const c = findCatalog(r); return fmtNum(c ? Number(c.hoursPractice||0) : r.hoursPractice)
+                  } }
+                ]}
+              ]
             return (
               <Tabs items={[
                 {
                   key: 'pending',
                   label: '待审核',
                   children: (
-                    <Table size="small" pagination={false} rowKey="key" dataSource={pending} expandable={{ defaultExpandAllRows: true }} columns={[
+                    <Table size="small" pagination={false} rowKey="key" dataSource={pending} expandable={{ defaultExpandAllRows: true }} onRow={(record)=> record.children ? { style: { background: '#fafafa', fontWeight: 500 } } : {}} columns={([
                       ...auditColumns,
+                      { title:'关联班级', render: (_:any, r:any) => {
+                        try {
+                          if (r.children) {
+                            return (
+                              <Dropdown
+                                menu={{
+                                  items: (() => {
+                                    const arr: string[] = []
+                                    const sizes: Record<string, number> = {}
+                                    ;(r.children || []).forEach((c: any) => {
+                                      const key = `${c.course || ''}${c.code ? `(${c.code})` : ''}`
+                                      const entry = classLinkDB[key]
+                                      const list = entry?.classes || (String(c.linkedClass || '').split(/[、，,;；\s]+/).map((s: string) => s.trim()).filter((s: string) => s.length > 0))
+                                      const sz = Number(c.classSizeThreshold || 0)
+                                      list.forEach((nm: string) => { if (nm && !arr.includes(nm)) arr.push(nm); if (nm) sizes[nm] = Math.max(Number(sizes[nm] || 0), sz) })
+                                    })
+                                    return (arr.length > 0 ? arr : ['暂无']).map((nm, idx) => ({ key: String(idx), label: arr.length > 0 ? `${nm} ${Number(sizes[nm]||0)>0 ? `${Number(sizes[nm]||0)}人` : ''}` : nm }))
+                                  })()
+                                }}
+                              >
+                                <a>{(() => { const a: string[] = []; (r.children || []).forEach((c: any) => { const key = `${c.course || ''}${c.code ? `(${c.code})` : ''}`; const entry = classLinkDB[key]; const list = entry?.classes || (String(c.linkedClass || '').split(/[、，,;；\s]+/).map((s: string) => s.trim()).filter((s: string) => s.length > 0)); list.forEach((nm: string) => { if (nm && !a.includes(nm)) a.push(nm) }); }); const count = a.length; return count > 0 ? `合计已关联${count}个班级` : '未关联'; })()}</a>
+                              </Dropdown>
+                            )
+                          }
+                          const key = `${r.course||''}${r.code?`(${r.code})`:''}`
+                          const entry = classLinkDB[key]
+                          const list = entry?.classes || (String(r.linkedClass||'').split(/[、，,;；\s]+/).map((s:string)=>s.trim()).filter((s:string)=>s.length>0))
+                          const count = list.length
+                          const text = count>0 ? `已关联${count}个班级` : '未关联'
+                          return (
+                            <Dropdown menu={{ items: (list.length>0 ? list : ['暂无']).map((nm,idx)=> ({ key: String(idx), label: list.length>0 ? `${nm} ${Number(r.classSizeThreshold||0)>0 ? `${Number(r.classSizeThreshold||0)}人` : ''}` : nm })) }}>
+                              <a>{text}</a>
+                            </Dropdown>
+                          )
+                        } catch { return '数据不可用' }
+                      } },
+                      { title:'关联教师', render: (_:any, r:any) => {
+                        try {
+                          if (r.children) {
+                            return (
+                              <Dropdown
+                                menu={{
+                                  items: (() => {
+                                    const arr: string[] = []
+                                    ;(r.children || []).forEach((c: any) => {
+                                      const key = `${c.course || ''}${c.code ? `(${c.code})` : ''}`
+                                      const entry = teacherLinkDB[key]
+                                      const list = entry?.teachers || (String(c.teacherScope || '').split(/[、，,;；\s]+/).map((s: string) => s.trim()).filter((s: string) => s.length > 0))
+                                      list.forEach((nm: string) => { if (nm && !arr.includes(nm)) arr.push(nm) })
+                                    })
+                                    return (arr.length > 0 ? arr : ['暂无']).map((nm, idx) => ({ key: String(idx), label: nm }))
+                                  })()
+                                }}
+                              >
+                                <a>{(() => { const a: string[] = []; (r.children || []).forEach((c: any) => { const key = `${c.course || ''}${c.code ? `(${c.code})` : ''}`; const entry = teacherLinkDB[key]; const list = entry?.teachers || (String(c.teacherScope || '').split(/[、，,;；\s]+/).map((s: string) => s.trim()).filter((s: string) => s.length > 0)); list.forEach((nm: string) => { if (nm && !a.includes(nm)) a.push(nm) }); }); const count = a.length; return count > 0 ? `合计已关联${count}位教师` : '未关联'; })()}</a>
+                              </Dropdown>
+                            )
+                          }
+                          const key = `${r.course||''}${r.code?`(${r.code})`:''}`
+                          const entry = teacherLinkDB[key]
+                          const list = entry?.teachers || (String(r.teacherScope||'').split(/[、，,;；\s]+/).map((s:string)=>s.trim()).filter((s:string)=>s.length>0))
+                          const count = list.length
+                          const text = count>0 ? `已关联${count}位教师` : '未关联'
+                          return (
+                            <Dropdown menu={{ items: (list.length>0 ? list : ['暂无']).map((nm,idx)=> ({ key: String(idx), label: nm })) }}>
+                              <a>{text}</a>
+                            </Dropdown>
+                          )
+                        } catch { return '数据不可用' }
+                      } },
                       {title:'操作',render:(_:any,record:any)=> (
                         <Space>
-                          {record.children ? null : (
+                          {record.children ? (
                             <>
-                              <Button size="small" type="primary" onClick={()=>approveOffering(record.key)}>通过</Button>
-                              <Button size="small" danger onClick={()=>rejectOffering(record.key)}>驳回</Button>
+                              <Button size="small" type="primary" disabled={!isAuthorizedMajor(String(record.major||''))} onClick={()=>approveGroup(record)}>通过</Button>
+                              <Button size="small" danger disabled={!isAuthorizedMajor(String(record.major||''))} onClick={()=>rejectGroup(record)}>驳回</Button>
                             </>
-                          )}
+                          ) : null}
                         </Space>
                       )}
-                    ]} />
+                    ]) as ColumnsType<any>} />
                   )
                 },
                 {
                   key: 'reviewed',
                   label: '已审核',
                   children: (
-                    <Table size="small" pagination={false} rowKey="key" dataSource={reviewed} expandable={{ defaultExpandAllRows: true }} columns={[
+                    <Table size="small" pagination={false} rowKey="key" dataSource={reviewed} expandable={{ defaultExpandAllRows: true }} columns={([
                       ...auditColumns,
+                      { title:'关联班级', render: (_:any, r:any) => {
+                        try {
+                          if (r.children) {
+                            return (
+                              <Dropdown
+                                menu={{
+                                  items: (() => {
+                                    const arr: string[] = []
+                                    const sizes: Record<string, number> = {}
+                                    ;(r.children || []).forEach((c: any) => {
+                                      const key = `${c.course || ''}${c.code ? `(${c.code})` : ''}`
+                                      const entry = classLinkDB[key]
+                                      const list = entry?.classes || (String(c.linkedClass || '').split(/[、，,;；\s]+/).map((s: string) => s.trim()).filter((s: string) => s.length > 0))
+                                      const sz = Number(c.classSizeThreshold || 0)
+                                      list.forEach((nm: string) => { if (nm && !arr.includes(nm)) arr.push(nm); if (nm) sizes[nm] = Math.max(Number(sizes[nm] || 0), sz) })
+                                    })
+                                    return (arr.length > 0 ? arr : ['暂无']).map((nm, idx) => ({ key: String(idx), label: arr.length > 0 ? `${nm} ${Number(sizes[nm]||0)>0 ? `${Number(sizes[nm]||0)}人` : ''}` : nm }))
+                                  })()
+                                }}
+                              >
+                                <a>{(() => { const a: string[] = []; (r.children || []).forEach((c: any) => { const key = `${c.course || ''}${c.code ? `(${c.code})` : ''}`; const entry = classLinkDB[key]; const list = entry?.classes || (String(c.linkedClass || '').split(/[、，,;；\s]+/).map((s: string) => s.trim()).filter((s: string) => s.length > 0)); list.forEach((nm: string) => { if (nm && !a.includes(nm)) a.push(nm) }); }); const count = a.length; return count > 0 ? `合计已关联${count}个班级` : '未关联'; })()}</a>
+                              </Dropdown>
+                            )
+                          }
+                          const key = `${r.course||''}${r.code?`(${r.code})`:''}`
+                          const entry = classLinkDB[key]
+                          const list = entry?.classes || (String(r.linkedClass||'').split(/[、，,;；\s]+/).map((s:string)=>s.trim()).filter((s:string)=>s.length>0))
+                          const count = list.length
+                          const text = count>0 ? `已关联${count}个班级` : '未关联'
+                          return (
+                            <Dropdown menu={{ items: (list.length>0 ? list : ['暂无']).map((nm,idx)=> ({ key: String(idx), label: list.length>0 ? `${nm} ${Number(r.classSizeThreshold||0)>0 ? `${Number(r.classSizeThreshold||0)}人` : ''}` : nm })) }}>
+                              <a>{text}</a>
+                            </Dropdown>
+                          )
+                        } catch { return '数据不可用' }
+                      } },
+                      { title:'关联教师', render: (_:any, r:any) => {
+                        try {
+                          if (r.children) {
+                            return (
+                              <Dropdown
+                                menu={{
+                                  items: (() => {
+                                    const arr: string[] = []
+                                    ;(r.children || []).forEach((c: any) => {
+                                      const key = `${c.course || ''}${c.code ? `(${c.code})` : ''}`
+                                      const entry = teacherLinkDB[key]
+                                      const list = entry?.teachers || (String(c.teacherScope || '').split(/[、，,;；\s]+/).map((s: string) => s.trim()).filter((s: string) => s.length > 0))
+                                      list.forEach((nm: string) => { if (nm && !arr.includes(nm)) arr.push(nm) })
+                                    })
+                                    return (arr.length > 0 ? arr : ['暂无']).map((nm, idx) => ({ key: String(idx), label: nm }))
+                                  })()
+                                }}
+                              >
+                                <a>{(() => { const a: string[] = []; (r.children || []).forEach((c: any) => { const key = `${c.course || ''}${c.code ? `(${c.code})` : ''}`; const entry = teacherLinkDB[key]; const list = entry?.teachers || (String(c.teacherScope || '').split(/[、，,;；\s]+/).map((s: string) => s.trim()).filter((s: string) => s.length > 0)); list.forEach((nm: string) => { if (nm && !a.includes(nm)) a.push(nm) }); }); const count = a.length; return count > 0 ? `合计已关联${count}位教师` : '未关联'; })()}</a>
+                              </Dropdown>
+                            )
+                          }
+                          const key = `${r.course||''}${r.code?`(${r.code})`:''}`
+                          const entry = teacherLinkDB[key]
+                          const list = entry?.teachers || (String(r.teacherScope||'').split(/[、，,;；\s]+/).map((s:string)=>s.trim()).filter((s:string)=>s.length>0))
+                          const count = list.length
+                          const text = count>0 ? `已关联${count}位教师` : '未关联'
+                          return (
+                            <Dropdown menu={{ items: (list.length>0 ? list : ['暂无']).map((nm,idx)=> ({ key: String(idx), label: nm })) }}>
+                              <a>{text}</a>
+                            </Dropdown>
+                          )
+                        } catch { return '数据不可用' }
+                      } },
                       {title:'审核顺序',dataIndex:'auditChain'},
                       {title:'状态',dataIndex:'status'},
                       {title:'操作',render:(_:any,record:any)=> (
@@ -3647,7 +4449,8 @@ export const OfferingPlan: React.FC = () => {
                           )}
                         </Space>
                       )}
-                    ]} />
+                      
+                    ]) as ColumnsType<any>} />
                   )
                 }
               ]} />
@@ -3784,6 +4587,111 @@ export const OfferingPlan: React.FC = () => {
   return (
     <div>
       {current?.children}
+    </div>
+  )
+}
+
+export const OfferingPlanMergedList: React.FC = () => {
+  const [rows, setRows] = useState<any[]>([])
+  const [loading, setLoading] = useState(false)
+  const [tableScrollX, setTableScrollX] = useState<number>(960)
+  const majorInfoMap = useMemo(() => {
+    try {
+      const rawTrack = localStorage.getItem('basic_major_track') || '[]'
+      const tracks = JSON.parse(rawTrack)
+      const map = new Map<string, { code: string }>()
+      if (Array.isArray(tracks)) {
+        tracks.forEach((m: any) => {
+          const nm = String(m.name || m.major || '').trim()
+          const code = String(m.code || '').trim()
+          if (nm) map.set(nm, { code })
+        })
+      }
+      return map
+    } catch { return new Map<string, { code: string }>() }
+  }, [])
+  useEffect(() => {
+    const handler = () => {
+      try {
+        const w = window.innerWidth || document.documentElement.clientWidth || 1280
+        if (w >= 1440) setTableScrollX(1024)
+        else if (w >= 1024) setTableScrollX(960)
+        else setTableScrollX(720)
+      } catch {}
+    }
+    handler()
+    window.addEventListener('resize', handler)
+    return () => window.removeEventListener('resize', handler)
+  }, [])
+  const formatNum = (n: number) => Number(n || 0).toLocaleString('zh-CN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })
+  useEffect(() => {
+    const compute = async () => {
+      setLoading(true)
+      try {
+        const offRaw = localStorage.getItem('offerings') || '[]'
+        const offerings = Array.isArray(JSON.parse(offRaw)) ? JSON.parse(offRaw) : []
+        const trackRaw = localStorage.getItem('basic_major_track') || '[]'
+        const tracks = Array.isArray(JSON.parse(trackRaw)) ? JSON.parse(trackRaw) : []
+        const group = new Map<string, { key: string; academic: string; grade: string; majorName: string; majorCode: string; count: number; credit: number; hours: number }>()
+        offerings.forEach((o: any) => {
+          const academic = String(o.academic || '')
+          const grade = String(o.grade || '')
+          const majorName = String(o.major || '')
+          const majorCode = String(majorInfoMap.get(majorName)?.code || '')
+          if (!academic || !grade || !majorName) return
+          const k = `${academic}||${grade}||${majorCode}||${majorName}`
+          const prev = group.get(k)
+          const credit = Number(o.credit || 0)
+          const hours = Number(o.hoursTotal || 0)
+          if (prev) group.set(k, { ...prev, count: prev.count + 1, credit: prev.credit + credit, hours: prev.hours + hours })
+          else group.set(k, { key: k, academic, grade, majorName, majorCode, count: 1, credit, hours })
+        })
+        let list = Array.from(group.values())
+        if (list.length < 3) {
+          const existingMajors = new Set(list.map((r) => r.majorName))
+          const fallbackAcademic = list[0]?.academic || String(offerings[0]?.academic || '') || '未设置'
+          const fallbackGrade = list[0]?.grade || String(offerings[0]?.grade || '') || String(new Date().getFullYear() - 3)
+          tracks.forEach((m: any) => {
+            const name = String(m.name || m.major || '').trim()
+            const code = String(m.code || '').trim()
+            if (!name || existingMajors.has(name)) return
+            if (list.length >= 3) return
+            const k = `${fallbackAcademic}||${fallbackGrade}||${code}||${name}`
+            list.push({ key: k, academic: fallbackAcademic, grade: fallbackGrade, majorName: name, majorCode: code, count: 0, credit: 0, hours: 0 })
+            existingMajors.add(name)
+          })
+        }
+        list.sort((a, b) => String(a.academic).localeCompare(String(b.academic)) || String(a.grade).localeCompare(String(b.grade)) || String(a.majorName).localeCompare(String(b.majorName)) || String(a.majorCode).localeCompare(String(b.majorCode)) )
+        setRows(list)
+      } catch {
+        setRows([])
+      } finally {
+        setLoading(false)
+      }
+    }
+    compute()
+  }, [majorInfoMap])
+  return (
+    <div>
+      <Card className="page-content" title="开课计划汇总">
+        <Table
+          size="small"
+          loading={loading}
+          pagination={{ pageSize: 10 }}
+          rowKey={(r:any)=> r.key}
+          dataSource={rows}
+          scroll={{ x: tableScrollX }}
+          columns={[
+            { title: '学期名称', dataIndex: 'academic' },
+            { title: '年级名称', dataIndex: 'grade' },
+            { title: '专业名称', dataIndex: 'majorName' },
+            { title: '专业代码', dataIndex: 'majorCode' },
+            { title: '合计开课门数', dataIndex: 'count', render: (v:any)=> formatNum(Number(v||0)) },
+            { title: '总学分', dataIndex: 'credit', render: (v:any)=> formatNum(Number(v||0)) },
+            { title: '总学时', dataIndex: 'hours', render: (v:any)=> formatNum(Number(v||0)) },
+          ]}
+        />
+      </Card>
     </div>
   )
 }
@@ -3954,6 +4862,591 @@ export const SchedulingAudit: React.FC = () => {
             </Space>
           )}
         ]} />
+      </Card>
+    </div>
+  )
+}
+
+export const TaskScheduling: React.FC = () => {
+  const [ruleForm] = Form.useForm()
+  const [autoForm] = Form.useForm()
+  const SCHEDULES_KEY = 'schedules'
+  const CLASS_LINK_DB_KEY = 'db_offering_class_links'
+  const TEACHER_LINK_DB_KEY = 'db_offering_teacher_links'
+  const [unscheduled, setUnscheduled] = useState<any[]>([])
+  const [schedules, setSchedules] = useState<any[]>([])
+  const [selected, setSelected] = useState<any | null>(null)
+  const [selectedKey, setSelectedKey] = useState<string | null>(null)
+  const [roomsVersion, setRoomsVersion] = useState(0)
+  const [editOpen, setEditOpen] = useState(false)
+  const [editingKey, setEditingKey] = useState<string | null>(null)
+  const [editForm] = Form.useForm()
+  const [roomSelect, setRoomSelect] = useState<string | undefined>(undefined)
+  const [roomUsageOpen, setRoomUsageOpen] = useState(false)
+  const [roomUsageRows, setRoomUsageRows] = useState<any[]>([])
+  const [conflictRows, setConflictRows] = useState<any[]>([])
+  const [roomFixOpen, setRoomFixOpen] = useState(false)
+  const [roomFixOptions, setRoomFixOptions] = useState<any[]>([])
+  const [fixKey, setFixKey] = useState<string | null>(null)
+  const [timeFixOpen, setTimeFixOpen] = useState(false)
+  const [fixRecord, setFixRecord] = useState<any | null>(null)
+  useEffect(()=>{ try{ const raw = localStorage.getItem(SCHEDULES_KEY)||'[]'; setSchedules(JSON.parse(raw)||[])}catch{} },[])
+  useEffect(()=>{ localStorage.setItem(SCHEDULES_KEY, JSON.stringify(schedules)) },[schedules])
+  const offerings = (()=>{ try{ const raw = localStorage.getItem('offerings')||'[]'; return JSON.parse(raw)||[] }catch{ return [] } })()
+  const classLinkDB = (()=>{ try{ const raw = localStorage.getItem(CLASS_LINK_DB_KEY)||'{}'; return JSON.parse(raw)||{} }catch{ return {} } })()
+  const teacherLinkDB = (()=>{ try{ const raw = localStorage.getItem(TEACHER_LINK_DB_KEY)||'{}'; return JSON.parse(raw)||{} }catch{ return {} } })()
+  const rooms = useMemo(() => { try { const raw = localStorage.getItem('basic_classrooms') || localStorage.getItem('classrooms') || '[]'; return JSON.parse(raw) as any[] } catch { return [] } }, [roomsVersion])
+  useEffect(()=>{ if(roomUsageOpen){ const rows = rooms.map((r:any)=>{ const name = String(r.name || r.room || r.doorNo || r.code || ''); const list = schedules.filter((s:any)=> String(s.room||'')===name).map((s:any)=> ({ key: s.key, term: s.term, cls: s.cls, teacher: s.teacher, time: s.time, weeks: s.weeks })) ; return { key: name || r.key || `${Date.now()}_${Math.random()}`, room: name, campus: String(r.campus||''), building: String(r.buildingName||''), type: String(r.type||''), capacity: Number(r.capacity||0), status: list.length>0 ? '已排课' : '未排课', count: list.length, details: list } }); setRoomUsageRows(rows) } }, [roomsVersion, rooms, schedules, roomUsageOpen])
+  const timeslots = useMemo(()=>{
+    const days = ['周一','周二','周三','周四','周五','周六','周日']
+    const periods = ['第1-2节','第3-4节','第5-6节','第7-8节','第9-10节']
+    const arr:string[]=[]; days.forEach(d=> periods.forEach(p=> arr.push(`${d}${p}`)))
+    return arr
+  },[])
+  const weekDaysDisplay = ['星期一','星期二','星期三','星期四','星期五','星期六','星期日']
+  const weekDaysValue = ['周一','周二','周三','周四','周五','周六','周日']
+  const periodDefs = [
+    { key: 'p12', label: '1~2', value: '第1-2节' },
+    { key: 'p34', label: '3~4', value: '第3-4节' },
+    { key: 'p56', label: '5~6', value: '第5-6节' },
+    { key: 'p78', label: '7~8', value: '第7-8节' },
+    { key: 'p910', label: '9~10', value: '第9-10节' }
+  ]
+  const timeGridData = weekDaysDisplay.map((d, idx)=> ({ key: d, day: d, dayValue: weekDaysValue[idx] }))
+  const timeGridDataByPeriod = periodDefs.map((p)=> ({ key: p.key, period: p.label, periodValue: p.value }))
+  const buildUnscheduled = () => {
+    const out:any[]=[]
+    const seen = new Set<string>()
+    offerings.forEach((o:any)=>{
+      const courseCombined = `${o.course||''}${o.code?`(${o.code})`:''}`
+      const clsList = (classLinkDB[courseCombined]?.classes || String(o.linkedClass||'').split(/[、，,;；\s]+/)).filter((x:string)=> String(x).trim().length>0)
+      let tchList = (teacherLinkDB[courseCombined]?.teachers || []).filter((x:string)=> String(x).trim().length>0)
+      if (tchList.length===0 && String(ruleForm.getFieldValue('autoTeachersDept')||'')==='是') {
+        try {
+          const dept = String(o.department||'')
+          const rawUsers = localStorage.getItem('sys_users') || localStorage.getItem('cache_users_list') || '[]'
+          const users = JSON.parse(rawUsers)
+          if (Array.isArray(users)) {
+            tchList = users.filter((u:any)=> String(u.department||u.dept||'')===dept && String(u.name||'').trim().length>0).slice(0,3).map((u:any)=> String(u.name))
+          }
+        } catch {}
+      }
+      if (tchList.length===0 && String(ruleForm.getFieldValue('allowNoTeacher')||'')==='是') {
+        const placeholder = String(o.teacherScope||'未分配教师') || '未分配教师'
+        tchList = [placeholder]
+      }
+      clsList.forEach((cls:string)=>{
+        tchList.forEach((tch:string)=>{
+          const exists = schedules.some((s:any)=> String(s.term||'')===String(o.term||'') && String(s.cls||'')===String(cls) && String(s.teacher||'')===String(tch))
+          const sig = `${String(o.term||'')}|${String(o.course||'')}|${String(cls)}|${String(tch).trim()}`
+          if(!exists && !seen.has(sig)){ out.push({ key:`U_${o.key}_${cls}_${tch}`, term:String(o.term||''), course:String(o.course||''), code:String(o.code||''), grade:String(o.grade||''), major:String(o.major||''), cls:String(cls), teacher:String(tch).trim(), type:String(o.ctype||'理论课'), students:Number(o.classSizeThreshold||40) }); seen.add(sig) }
+        })
+      })
+    })
+    setUnscheduled(out)
+  }
+  useEffect(()=>{ buildUnscheduled() },[])
+  const conflictsAt = (term:string, time:string, teacher:string, cls:string, room:string) => {
+    const sameTime = schedules.filter((s:any)=> String(s.term||'')===term && String(s.time||'')===time)
+    const teacherConflict = sameTime.some((s:any)=> String(s.teacher||'')===teacher)
+    const classConflict = sameTime.some((s:any)=> String(s.cls||'')===cls)
+    const roomConflict = sameTime.some((s:any)=> String(s.room||'')===room)
+    return { teacherConflict, classConflict, roomConflict }
+  }
+  const pickRoom = (type:string, students:number) => {
+    const matchType=(r:any)=> type.includes('实验') ? String(r.type||'').includes('实验') : !String(r.type||'').includes('实验')
+    const list = rooms.filter(matchType).sort((a:any,b:any)=> (Number(a.capacity||0)-students) - (Number(b.capacity||0)-students))
+    return String((list[0]?.name || list[0]?.doorNo || list[0]?.room || list[0]?.code || 'A-101'))
+  }
+  const autoScheduleAll = () => {
+    const rule = ruleForm.getFieldsValue()
+    const added:any[]=[]
+    unscheduled.forEach((u:any)=>{
+      for(const t of timeslots){
+        const room = roomSelect || pickRoom(u.type, Number(u.students||40))
+        const c = conflictsAt(u.term, t, u.teacher, u.cls, room)
+        const pass = (!rule.checkTeacher || !c.teacherConflict) && (!rule.checkClass || !c.classConflict) && (!rule.checkRoom || !c.roomConflict)
+        if(pass){ added.push({ key:`S_${Date.now()}_${Math.random()}`, term:u.term, course: u.course, cls:u.cls, teacher:u.teacher, room, time:t, weeks: rule.weeks || '1-16', practiceLocation:'', groups:0, type:u.type, students:u.students, roomType: u.type.includes('实验') ? '实验室' : '普通教室', createdAt: Date.now() }); break }
+      }
+    })
+    if(added.length>0){ setSchedules((prev)=> [...added, ...prev]); setUnscheduled((prev)=> prev.filter((x)=> !added.some((a)=> a.cls===x.cls && a.teacher===x.teacher && a.term===x.term))) }
+  }
+  const assignSelected = (slot:string, room:string) => {
+    if(!selected) return
+    const c = conflictsAt(selected.term, slot, selected.teacher, selected.cls, room)
+    const r = ruleForm.getFieldsValue()
+    const pass = (!r.checkTeacher || !c.teacherConflict) && (!r.checkClass || !c.classConflict) && (!r.checkRoom || !c.roomConflict)
+    if(!pass){ message.warning('存在冲突，请换时段或教室'); return }
+    const row = { key:`S_${Date.now()}`, term:selected.term, course: selected.course, cls:selected.cls, teacher:selected.teacher, room, time:slot, weeks: r.weeks || '1-16', practiceLocation:'', groups:0, type:selected.type, students:selected.students, roomType: selected.type.includes('实验') ? '实验室' : '普通教室', createdAt: Date.now() }
+    setSchedules((prev)=> [row, ...prev])
+    setUnscheduled((prev)=> prev.filter((x)=> x.key!==selected.key))
+    setSelected(null)
+  }
+  const saveSchedules = () => { localStorage.setItem(SCHEDULES_KEY, JSON.stringify(schedules)); message.success('已保存本次编排') }
+  const refreshRooms = () => { setRoomsVersion((v)=> v+1); setRoomUsageOpen(true) }
+  const removeSchedule = (key: string) => { setSchedules((prev)=> prev.filter((r)=> r.key!==key)) }
+  const onEditSchedule = (record: any) => { setEditingKey(record.key); setEditOpen(true); editForm.setFieldsValue(record); setRoomSelect(record.room) }
+  const saveEditSchedule = (v: any) => { setSchedules((prev)=> prev.map((r)=> r.key===editingKey ? { ...r, term: v.term||r.term, cls: v.cls||r.cls, teacher: v.teacher||r.teacher, room: v.room||r.room, time: v.time||r.time, weeks: v.weeks||r.weeks, type: v.type||r.type, students: Number(v.students??r.students), roomType: v.roomType||r.roomType } : r)); setEditOpen(false); setEditingKey(null) }
+  const editLast = () => { const rec = schedules[0]; if(!rec){ message.info('暂无已编排记录'); return } ; setEditingKey(rec.key); setEditOpen(true); editForm.setFieldsValue(rec); setRoomSelect(rec.room) }
+  useEffect(()=>{
+    const arr:any[]=[]
+    schedules.forEach((a)=>{
+      schedules.forEach((b)=>{
+        if(a.key===b.key) return
+        if(a.term===b.term && a.time===b.time){
+          if(a.teacher&&b.teacher&&a.teacher===b.teacher) arr.push({ key:`T_${a.key}_${b.key}`, type:'教师冲突', detail:`${a.teacher} ${a.time}`, aKey:a.key, bKey:b.key, term:a.term, time:a.time })
+          if(a.cls&&b.cls&&a.cls===b.cls) arr.push({ key:`C_${a.key}_${b.key}`, type:'班级冲突', detail:`${a.cls} ${a.time}`, aKey:a.key, bKey:b.key, term:a.term, time:a.time })
+          if(a.room&&b.room&&a.room===b.room) arr.push({ key:`R_${a.key}_${b.key}`, type:'教室冲突', detail:`${a.room} ${a.time}`, aKey:a.key, bKey:b.key, term:a.term, time:a.time, room:a.room })
+        }
+      })
+    })
+    const uniq = new Map<string, any>()
+    arr.forEach((x)=>{ if(!uniq.has(x.key)) uniq.set(x.key, x) })
+    setConflictRows(Array.from(uniq.values()))
+  },[schedules])
+  const availableRooms = (term:string, time:string, type:string, students:number) => {
+    const matchType=(r:any)=> type.includes('实验') ? String(r.type||'').includes('实验') : !String(r.type||'').includes('实验')
+    return rooms
+      .filter(matchType)
+      .filter((r:any)=> !schedules.some((s:any)=> String(s.term||'')===term && String(s.time||'')===time && String(s.room||'')===String(r.name || r.room || r.doorNo || r.code || '')))
+      .filter((r:any)=> Number(r.capacity||0) >= Number(students||0))
+      .map((r:any)=> ({ value: String(r.name || r.room || r.doorNo || r.code || ''), label: `${String(r.name || r.room || r.doorNo || '')}（${String(r.type||'')}，容量${Number(r.capacity||0)}）` }))
+  }
+  const openRoomFix = (key:string) => {
+    const rec = schedules.find((s:any)=> s.key===key)
+    if(!rec){ message.info('未找到记录'); return }
+    setFixKey(key)
+    setRoomFixOptions(availableRooms(String(rec.term||''), String(rec.time||''), String(rec.type||'理论课'), Number(rec.students||0)))
+    setRoomFixOpen(true)
+  }
+  const applyRoomFix = (room:string) => { if(!fixKey){ setRoomFixOpen(false); return } ; setSchedules((prev)=> prev.map((r)=> r.key===fixKey ? { ...r, room } : r)); setRoomFixOpen(false); setFixKey(null) }
+  const openTimeFix = (key:string) => { const rec = schedules.find((s:any)=> s.key===key); if(!rec){ message.info('未找到记录'); return } ; setFixRecord(rec); setTimeFixOpen(true) }
+  const applyTimeFix = (slot:string) => { if(!fixRecord){ setTimeFixOpen(false); return } ; const c = conflictsAt(String(fixRecord.term||''), slot, String(fixRecord.teacher||''), String(fixRecord.cls||''), String(fixRecord.room||'')); const pass = !c.teacherConflict && !c.classConflict && !c.roomConflict; if(!pass){ message.warning('该时段仍冲突'); return } ; setSchedules((prev)=> prev.map((r)=> r.key===fixRecord.key ? { ...r, time: slot } : r)); setTimeFixOpen(false); setFixRecord(null) }
+  const seedDemoData = () => {
+    try {
+      const sampleOfferings = [
+        { key:'o_ds', academic:'2025-秋', grade:'2024', major:'中文系', duration:'4', course:'大学语文', code:'CUR0001', category:'专业课', assess:'考试', position:'核心', credit:2, hoursTotal:32, hoursTheory:32, hoursExperiment:0, hoursTraining:0, hoursPractice:0, department:'文学院', remark:'', status:'待审核', linkedClass:'中文系1班', term:'2025-秋', ctype:'理论课', classSizeThreshold:50, teacherScope:'不限', teacherRange:'', auditChain:'系主任→教秘→教务处' },
+        { key:'o_algo', academic:'2025-秋', grade:'2024', major:'计算机科学与技术', duration:'4', course:'数据结构', code:'CUR08090101', category:'专业课', assess:'考试', position:'核心', credit:4, hoursTotal:48, hoursTheory:48, hoursExperiment:0, hoursTraining:0, hoursPractice:0, department:'计算机学院', remark:'', status:'待审核', linkedClass:'计科2024-01班、计科2024-02班', term:'2025-秋', ctype:'理论课', classSizeThreshold:60, teacherScope:'不限', teacherRange:'', auditChain:'系主任→教秘→教务处' }
+      ]
+      const sampleClasses = {
+        '大学语文(CUR0001)': { classes: ['中文系1班'], createdAt: Date.now() },
+        '数据结构(CUR08090101)': { classes: ['计科2024-01班','计科2024-02班'], createdAt: Date.now() }
+      }
+      const sampleTeachers = {
+        '大学语文(CUR0001)': { teachers: ['王老师'], createdAt: Date.now() },
+        '数据结构(CUR08090101)': { teachers: ['张三','李四'], createdAt: Date.now() }
+      }
+      const sampleRooms = [
+        { key:'rmA101', code:'ROOM001', campus:'A校区', buildingName:'A楼', floor:1, doorNo:'101', name:'A-101', type:'普通教室', capacity:60, department:'教务处', equipment:'投影仪', status:'启用' },
+        { key:'rmLab201', code:'ROOM002', campus:'A校区', buildingName:'实验楼', floor:2, doorNo:'201', name:'LAB-201', type:'实验室', capacity:40, department:'理学院', equipment:'实验台', status:'启用' }
+      ]
+      localStorage.setItem('offerings', JSON.stringify(sampleOfferings))
+      localStorage.setItem(CLASS_LINK_DB_KEY, JSON.stringify(sampleClasses))
+      localStorage.setItem(TEACHER_LINK_DB_KEY, JSON.stringify(sampleTeachers))
+      localStorage.setItem('basic_classrooms', JSON.stringify(sampleRooms))
+      message.success('已加载示例数据')
+      buildUnscheduled()
+    } catch {}
+  }
+  const undoLast = () => { setSchedules((prev)=> prev.slice(1)) }
+  const clearSchedules = () => { setSchedules([]); message.success('已清空本次编排') }
+  return (
+    <div>
+      <Card className="page-content" title="规则与范围">
+        <Form form={ruleForm} layout="inline" initialValues={{ checkTeacher:true, checkClass:true, checkRoom:true, weeks:'1-16', autoTeachersDept:'否', allowNoTeacher:'是' }}>
+          <Form.Item name="campus" label="校区"><Select allowClear style={{ width: 160 }} options={Array.from(new Set(rooms.map(r=> String(r.campus||'')))).filter(x=>x).map(v=>({value:v,label:v}))} /></Form.Item>
+          <Form.Item name="ctype" label="课程类型"><Select allowClear style={{ width: 160 }} options={[{value:'理论课',label:'理论课'},{value:'实验课',label:'实验课'},{value:'实训课',label:'实训课'},{value:'实践课',label:'实践课'}]} /></Form.Item>
+          <Form.Item name="department" label="学院"><Input placeholder="如：计算机学院" style={{ width: 180 }} /></Form.Item>
+          <Form.Item name="checkTeacher" valuePropName="checked"><Checkbox>检测教师冲突</Checkbox></Form.Item>
+          <Form.Item name="checkClass" valuePropName="checked"><Checkbox>检测班级冲突</Checkbox></Form.Item>
+          <Form.Item name="checkRoom" valuePropName="checked"><Checkbox>检测教室冲突</Checkbox></Form.Item>
+          <Form.Item name="autoTeachersDept" label="按学院补全教师"><Select style={{ width: 180 }} options={[{value:'否',label:'否'},{value:'是',label:'是'}]} /></Form.Item>
+          <Form.Item name="weeks" label="周次"><Input placeholder="如：1-16/单周/双周" style={{ width: 180 }} /></Form.Item>
+          <Form.Item name="allowNoTeacher" label="无教师也生成"><Select style={{ width: 160 }} options={[{value:'是',label:'是'},{value:'否',label:'否'}]} /></Form.Item>
+          <Form.Item><Button type="primary" onClick={buildUnscheduled}>检索待排课</Button></Form.Item>
+          <Form.Item><Button onClick={autoScheduleAll}>一键自动编排</Button></Form.Item>
+          <Form.Item><Button onClick={seedDemoData}>加载示例数据</Button></Form.Item>
+          <Form.Item><Button danger onClick={clearSchedules}>清空本次编排</Button></Form.Item>
+        </Form>
+      </Card>
+      <Row gutter={12}>
+        <Col span={12}>
+          <Card className="page-content" title="待排课">
+            <Table size="small" pagination={{ pageSize: 10 }} rowKey="key" dataSource={unscheduled} onRow={(r)=> ({ onClick:()=> { setSelected(r); setSelectedKey(r.key) }, onDoubleClick:()=> { setSelected(r); setSelectedKey(r.key) } })} rowClassName={(r)=> String(r.key)===String(selectedKey||'') ? 'task-schedule-row-selected' : ''} columns={[
+              {title:'课程',dataIndex:'course'},
+              {title:'课程班',dataIndex:'cls'},
+              {title:'教师',dataIndex:'teacher'},
+              {title:'类型',dataIndex:'type'},
+              {title:'人数',dataIndex:'students'},
+              {title:'学期',dataIndex:'term'}
+            ]} />
+          </Card>
+        </Col>
+        <Col span={12}>
+          <Card className="page-content" title="时间轴与教室选择">
+            <Space direction="vertical" style={{ width: '100%' }}>
+              <Alert type="info" message={selected ? `当前：${selected.course} ${selected.cls} ${selected.teacher}` : '双击左侧待排课选择'} />
+              <Space wrap>
+                <Select
+                  allowClear
+                  style={{ width: 280 }}
+                  placeholder="选择教室"
+                  value={roomSelect}
+                  onChange={(v)=> setRoomSelect(v)}
+                  showSearch
+                  optionFilterProp="label"
+                  options={rooms
+                    .filter((r: any)=> selected ? (selected.type.includes('实验') ? String(r.type||'').includes('实验') : !String(r.type||'').includes('实验')) : true)
+                    .map((r: any)=> ({
+                      value: String(r.name || r.room || r.doorNo || r.code || ''),
+                      label: `${String(r.name || r.room || r.doorNo || '')}（${String(r.type||'')}，容量${Number(r.capacity||0)}）`
+                    }))}
+                />
+                <Button onClick={refreshRooms}>教室选择</Button>
+                <Button type="primary" onClick={saveSchedules}>保存本次编排</Button>
+              </Space>
+              <Table
+                size="small"
+                pagination={false}
+                rowKey="key"
+                dataSource={timeGridDataByPeriod}
+                columns={[
+                  { title: '节次', dataIndex: 'period', width: 100 },
+                  ...weekDaysDisplay.map((d, idx)=> ({
+                    title: d,
+                    key: weekDaysValue[idx],
+                    render: (_:any, record:any) => (
+                      <Button
+                        size="small"
+                        style={{ width: '100%' }}
+                        onClick={()=> assignSelected(`${weekDaysValue[idx]}${record.periodValue}`, roomSelect || pickRoom(selected?.type||'理论课', Number(selected?.students||40)))}
+                      >
+                        {record.period}
+                      </Button>
+                    )
+                  }))
+                ] as ColumnsType<any>}
+              />
+              <Descriptions bordered size="small" column={1} title="已编排（本次）">
+                {(schedules.slice(0,8)).map((s:any)=> (
+                  <Descriptions.Item key={s.key} label={`${s.cls}-${s.teacher}`}>{`${s.time} @ ${s.room} (${s.weeks})`}</Descriptions.Item>
+                ))}
+              </Descriptions>
+              <Space style={{ width: '100%', justifyContent: 'flex-end' }}>
+                <Button onClick={editLast}>修改最近一次</Button>
+                <Button onClick={undoLast}>撤销最近一次</Button>
+              </Space>
+            </Space>
+          </Card>
+        </Col>
+      </Row>
+      <Card className="page-content" title="已编排课程列表">
+        <Table size="small" pagination={{ pageSize: 10 }} rowKey="key" dataSource={schedules} columns={[
+          {title:'学期',dataIndex:'term'},
+          {title:'课程班',dataIndex:'cls'},
+          {title:'教师',dataIndex:'teacher'},
+          {title:'教室',dataIndex:'room'},
+          {title:'时间',dataIndex:'time'},
+          {title:'周次',dataIndex:'weeks'},
+          {title:'单双周',render:(_:any, r:any)=> { const w = String(r.weeks||''); return w.includes('单') ? '单周' : (w.includes('双') ? '双周' : '全周') } },
+          {title:'类型',dataIndex:'type'},
+          {title:'人数',dataIndex:'students'},
+          {title:'教室类型',dataIndex:'roomType'},
+          {title:'操作',render:(_:any,record:any)=> (
+            <Space>
+              <Button size="small" onClick={()=> onEditSchedule(record)}>修改</Button>
+              <Popconfirm title="确认撤销该编排？" onConfirm={()=> removeSchedule(record.key)}>
+                <Button size="small" danger>撤销</Button>
+              </Popconfirm>
+            </Space>
+          )}
+        ]} />
+        <Modal open={roomUsageOpen} title="教室使用状态" footer={null} onCancel={()=> setRoomUsageOpen(false)} width={960}>
+          <Table size="small" pagination={{ pageSize: 10 }} rowKey="key" dataSource={roomUsageRows} columns={[
+            {title:'教室',dataIndex:'room'},
+            {title:'校区',dataIndex:'campus'},
+            {title:'楼栋',dataIndex:'building'},
+            {title:'类型',dataIndex:'type'},
+            {title:'容量',dataIndex:'capacity'},
+            {title:'状态',dataIndex:'status'},
+            {title:'已排数',dataIndex:'count'}
+          ]} expandable={{ expandedRowRender: (record:any)=> (
+            <Table size="small" pagination={false} rowKey="key" dataSource={record.details} columns={[
+              {title:'学期',dataIndex:'term'},
+              {title:'课程班',dataIndex:'cls'},
+              {title:'教师',dataIndex:'teacher'},
+              {title:'时间',dataIndex:'time'},
+              {title:'周次',dataIndex:'weeks'}
+            ]} />
+          ) }} />
+        </Modal>
+        <Modal open={editOpen} title="修改已编排课程" footer={null} onCancel={()=> setEditOpen(false)}>
+          <Form form={editForm} layout="vertical" onFinish={saveEditSchedule}>
+            <Form.Item name="term" label="学期"><Input /></Form.Item>
+            <Form.Item name="cls" label="课程班"><Input /></Form.Item>
+            <Form.Item name="teacher" label="教师"><Input /></Form.Item>
+            <Form.Item name="room" label="教室"><Select allowClear showSearch optionFilterProp="label" options={rooms.map((r:any)=> ({ value: String(r.name || r.room || r.doorNo || r.code || ''), label: `${String(r.name || r.room || r.doorNo || '')}（${String(r.type||'')}，容量${Number(r.capacity||0)}）` }))} /></Form.Item>
+            <Form.Item name="time" label="时间"><Input /></Form.Item>
+            <Form.Item name="weeks" label="周次"><Input /></Form.Item>
+            <Form.Item name="type" label="类型"><Select allowClear options={[{value:'理论课',label:'理论课'},{value:'实验课',label:'实验课'},{value:'实训课',label:'实训课'},{value:'实践课',label:'实践课'}]} /></Form.Item>
+            <Form.Item name="students" label="人数"><InputNumber style={{ width: 140 }} /></Form.Item>
+            <Form.Item name="roomType" label="教室类型"><Select allowClear style={{ width: 200 }} options={[{value:'普通教室',label:'普通教室'},{value:'多媒体教室',label:'多媒体教室'},{value:'计算机房',label:'计算机房'},{value:'实验室',label:'实验室'}]} /></Form.Item>
+            <Space>
+              <Button type="primary" htmlType="submit">保存</Button>
+              <Button onClick={()=> setEditOpen(false)}>取消</Button>
+            </Space>
+          </Form>
+        </Modal>
+      </Card>
+      <Card className="page-content" title="冲突检测与调整">
+        <Table size="small" pagination={false} rowKey={(r:any)=> r.key} dataSource={conflictRows} columns={[
+          {title:'类型',dataIndex:'type'},
+          {title:'详情',dataIndex:'detail'},
+          {title:'操作',render:(_:any, r:any)=> (
+            <Space wrap>
+              <Button size="small" onClick={()=> openRoomFix(r.aKey)}>换教室(A)</Button>
+              <Button size="small" onClick={()=> openRoomFix(r.bKey)}>换教室(B)</Button>
+              <Button size="small" onClick={()=> openTimeFix(r.aKey)}>换时间(A)</Button>
+              <Button size="small" onClick={()=> openTimeFix(r.bKey)}>换时间(B)</Button>
+              <Popconfirm title="撤销A这条安排？" onConfirm={()=> removeSchedule(r.aKey)}><Button size="small" danger>撤销A</Button></Popconfirm>
+              <Popconfirm title="撤销B这条安排？" onConfirm={()=> removeSchedule(r.bKey)}><Button size="small" danger>撤销B</Button></Popconfirm>
+            </Space>
+          )}
+        ]} />
+        <Modal open={roomFixOpen} title="选择可用教室" footer={null} onCancel={()=> setRoomFixOpen(false)}>
+          <Form onFinish={(v)=> applyRoomFix(String(v.room||''))} layout="inline">
+            <Form.Item name="room" label="教室" rules={[{ required: true }]}>
+              <Select allowClear showSearch optionFilterProp="label" style={{ width: 360 }} options={roomFixOptions} />
+            </Form.Item>
+            <Form.Item>
+              <Button type="primary" htmlType="submit">应用</Button>
+            </Form.Item>
+          </Form>
+        </Modal>
+        <Modal open={timeFixOpen} title="选择新的时间" footer={null} onCancel={()=> setTimeFixOpen(false)} width={720}>
+          <Table size="small" pagination={false} rowKey="key" dataSource={timeGridDataByPeriod} columns={[
+            { title: '节次', dataIndex: 'period', width: 100 },
+            ...weekDaysDisplay.map((d, idx)=> ({
+              title: d,
+              key: weekDaysValue[idx],
+              render: (_:any, record:any) => (<Button size="small" style={{ width: '100%' }} onClick={()=> applyTimeFix(`${weekDaysValue[idx]}${record.periodValue}`)}>{record.period}</Button>)
+            }))
+          ] as ColumnsType<any>} />
+        </Modal>
+      </Card>
+    </div>
+  )
+}
+
+export const ScheduledCoursesList: React.FC = () => {
+  const [form] = Form.useForm()
+  const [data, setData] = useState<any[]>([])
+  const [filtered, setFiltered] = useState<any[]>([])
+  const [collapsed, setCollapsed] = useState(false)
+  const [selectionMode, setSelectionMode] = useState<'single'|'multiple'>('multiple')
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
+  useEffect(()=>{ try{ const raw = localStorage.getItem('schedules')||'[]'; const arr = JSON.parse(raw)||[]; setData(arr) ; setFiltered(arr.sort((a:any,b:any)=> Number(b.createdAt||0) - Number(a.createdAt||0))) }catch{} },[])
+  const conflictsMap = useMemo(()=>{
+    const arr:any[]=[]
+    data.forEach((a)=>{
+      data.forEach((b)=>{
+        if(a.key===b.key) return
+        if(a.term===b.term && a.time===b.time){
+          const conflict = (a.teacher&&b.teacher&&a.teacher===b.teacher) || (a.cls&&b.cls&&a.cls===b.cls) || (a.room&&b.room&&a.room===b.room)
+          if(conflict){ arr.push(a.key); arr.push(b.key) }
+        }
+      })
+    })
+    return new Set(arr)
+  },[data])
+  const doFilter = () => {
+    const v = form.getFieldsValue()
+    let arr = [...data]
+    if(v.course){ const s=String(v.course||'').trim(); arr = arr.filter((x)=> String(x.cls||x.course||'').includes(s)) }
+    if(v.ctype){ arr = arr.filter((x)=> String(x.type||'')===String(v.ctype)) }
+    if(v.teacher){ const s=String(v.teacher||'').trim(); arr = arr.filter((x)=> String(x.teacher||'').includes(s)) }
+    if(v.range && v.range.length===2){ const [start,end] = v.range; const st = start?.valueOf?.() || 0; const ed = end?.valueOf?.() || 0; arr = arr.filter((x)=> { const t = Number(x.createdAt||0); return t>=st && t<=ed }) }
+    if(v.status){ if(v.status==='有效'){ arr = arr.filter((x)=> !conflictsMap.has(x.key)) } else if(v.status==='冲突'){ arr = arr.filter((x)=> conflictsMap.has(x.key)) } }
+    arr.sort((a:any,b:any)=> Number(b.createdAt||0) - Number(a.createdAt||0))
+    setFiltered(arr)
+  }
+  useEffect(()=>{ doFilter() },[data])
+  const refresh = () => { try{ const raw = localStorage.getItem('schedules')||'[]'; const arr = JSON.parse(raw)||[]; setData(arr) ; message.success('已刷新') }catch{} }
+  const exportCSV = () => {
+    const headers = ['学期','课程班','教师','教室','时间','周次','单双周','类型','人数','教室类型','编排时间','状态']
+    const rows = filtered.map((x)=> [
+      String(x.term||''),
+      String(x.cls||''),
+      String(x.teacher||''),
+      String(x.room||''),
+      String(x.time||''),
+      String(x.weeks||''),
+      (String(x.weeks||'').includes('单')?'单周':(String(x.weeks||'').includes('双')?'双周':'全周')),
+      String(x.type||''),
+      String(x.students||''),
+      String(x.roomType||''),
+      new Date(Number(x.createdAt||0)).toLocaleString(),
+      conflictsMap.has(x.key)?'冲突':'有效'
+    ])
+    const content = [headers.join(','), ...rows.map(r=> r.map(v=> String(v).replace(/"/g,'""')).join(','))].join('\n')
+    const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = '已编排课程列表.csv'
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+  const columns: any[] = [
+    { title:'学期', dataIndex:'term', sorter:(a:any,b:any)=> String(a.term||'').localeCompare(String(b.term||'')) },
+    { title:'课程班', dataIndex:'cls', sorter:(a:any,b:any)=> String(a.cls||'').localeCompare(String(b.cls||'')) },
+    { title:'教师', dataIndex:'teacher', sorter:(a:any,b:any)=> String(a.teacher||'').localeCompare(String(b.teacher||'')) },
+    { title:'教室', dataIndex:'room', sorter:(a:any,b:any)=> String(a.room||'').localeCompare(String(b.room||'')) },
+    { title:'时间', dataIndex:'time', sorter:(a:any,b:any)=> String(a.time||'').localeCompare(String(b.time||'')) },
+    { title:'周次', dataIndex:'weeks' },
+    { title:'单双周', render:(_:any, r:any)=> { const w = String(r.weeks||''); return w.includes('单') ? '单周' : (w.includes('双') ? '双周' : '全周') } },
+    { title:'类型', dataIndex:'type', sorter:(a:any,b:any)=> String(a.type||'').localeCompare(String(b.type||'')) },
+    { title:'人数', dataIndex:'students', sorter:(a:any,b:any)=> Number(a.students||0) - Number(b.students||0) },
+    { title:'教室类型', dataIndex:'roomType' },
+    { title:'编排时间', render: (_:any,r:any)=> new Date(Number(r.createdAt||0)).toLocaleString(), sorter:(a:any,b:any)=> Number(a.createdAt||0) - Number(b.createdAt||0), defaultSortOrder: 'descend' },
+    { title:'状态', render: (_:any,r:any)=> conflictsMap.has(r.key)? '冲突' : '有效' },
+    { title:'操作', render: (_:any,r:any)=> (
+      <Space>
+        <Button size="small" onClick={()=> message.info(JSON.stringify(r))}>查看详情</Button>
+        <Button size="small" onClick={()=> message.info('请在任务排课页面使用“修改”功能')}>编辑</Button>
+        <Popconfirm title="确认删除该记录？" onConfirm={()=> { const next = data.filter((x)=> x.key!==r.key); setData(next); localStorage.setItem('schedules', JSON.stringify(next)) }}><Button size="small" danger>删除</Button></Popconfirm>
+      </Space>
+    ) }
+  ]
+  const rowSelection:any = {
+    type: selectionMode==='single' ? 'radio' : 'checkbox',
+    selectedRowKeys,
+    onChange: (keys: React.Key[]) => setSelectedRowKeys(keys)
+  }
+  return (
+    <div>
+      <Card className="page-content" title="已编排课程列表">
+        <Space style={{ marginBottom: 12 }}>
+          <Button onClick={()=> setCollapsed((v)=> !v)}>{collapsed? '展开查询' : '折叠查询'}</Button>
+          <Button onClick={refresh}>刷新</Button>
+          <Button onClick={exportCSV}>导出</Button>
+          <Select value={selectionMode} onChange={(v)=> setSelectionMode(v)} style={{ width: 140 }} options={[{value:'single',label:'单选模式'},{value:'multiple',label:'多选模式'}]} />
+        </Space>
+        {!collapsed && (
+          <Card size="small">
+            <Form form={form} layout="inline" initialValues={{ status: '全部' }}>
+              <Form.Item name="course" label="课程名称"><Input allowClear placeholder="支持模糊搜索" style={{ width: 220 }} /></Form.Item>
+              <Form.Item name="ctype" label="课程类型"><Select allowClear style={{ width: 160 }} options={[{value:'理论课',label:'理论课'},{value:'实验课',label:'实验课'},{value:'实训课',label:'实训课'},{value:'实践课',label:'实践课'}]} /></Form.Item>
+              <Form.Item name="range" label="编排日期范围"><DatePicker.RangePicker /></Form.Item>
+              <Form.Item name="teacher" label="授课教师"><Input allowClear placeholder="支持模糊搜索" style={{ width: 180 }} /></Form.Item>
+              <Form.Item name="status" label="课程状态"><Radio.Group options={[{value:'全部',label:'全部'},{value:'有效',label:'有效'},{value:'冲突',label:'冲突'}]} /></Form.Item>
+              <Form.Item><Button type="primary" onClick={doFilter}>查询</Button></Form.Item>
+            </Form>
+          </Card>
+        )}
+        <Table
+          size="small"
+          rowKey={(r:any)=> r.key}
+          dataSource={filtered}
+          pagination={{ pageSize: 10 }}
+          rowSelection={rowSelection}
+          columns={columns}
+        />
+      </Card>
+    </div>
+  )
+}
+
+export const TeachingTaskTeacherTaskBook: React.FC = () => {
+  const [rows, setRows] = useState<any[]>([])
+  useEffect(()=>{
+    try{
+      const schRaw = localStorage.getItem('schedules')||'[]'
+      const offRaw = localStorage.getItem('offerings')||'[]'
+      const schedules = JSON.parse(schRaw)||[]
+      const offerings = JSON.parse(offRaw)||[]
+      const mapByCourse: Record<string, any> = {}
+      offerings.forEach((o:any)=>{ const key = String(o.course||''); if(key) mapByCourse[key] = o })
+      const out:any[] = schedules.map((s:any, idx:number)=>{
+        const o = mapByCourse[String(s.course||'')] || {}
+        const code = String(o.code||'')
+        const courseName = String(s.course||o.course||'')
+        const major = String(o.major||'')
+        const category = String(o.category||o.ctype||s.type||'')
+        const teacher = String(s.teacher||'')
+        const clsCode = String(s.cls||'')
+        const teachMode = String(s.type||'')
+        const hoursTotal = Number(o.hoursTotal||o.hoursTheory||0)
+        const hoursPlan = Number(o.hoursTotal||0)
+        const periodsMatch = /第(\d+)-(\d+)节/.exec(String(s.time||''))
+        const periods = periodsMatch ? (Number(periodsMatch[2]) - Number(periodsMatch[1]) + 1) : 0
+        const weeksText = String(s.weeks||'')
+        const weeksCount = (/^(\d+)-(\d+)$/.test(weeksText)) ? (Number(RegExp.$2) - Number(RegExp.$1) + 1) : (weeksText.includes('单')||weeksText.includes('双') ? 8 : 0)
+        const arrangedHours = periods * (weeksCount>0 ? weeksCount : 0)
+        const students = Number(s.students||0)
+        const weekHours = periods
+        const continuousPeriods = periods
+        const teachClassName = String(s.cls||'')
+        const combineInfo = '-' 
+        const auditNote = ''
+        const auditStatus = '草稿'
+        const remark = ''
+        return {
+          key: s.key || `TB_${idx}`,
+          index: idx+1,
+          courseCombined: courseName && code ? `${courseName}(${code})` : (courseName||'-'),
+          major,
+          category,
+          teacher,
+          clsCode,
+          teachMode,
+          hoursTotal,
+          hoursPlan,
+          arrangedHours,
+          students,
+          weeks: weeksText,
+          weekHours,
+          continuousPeriods,
+          teachClassName,
+          combineInfo,
+          auditNote,
+          auditStatus,
+          remark
+        }
+      })
+      setRows(out)
+    }catch{}
+  },[])
+  return (
+    <div>
+      <Card className="page-content" title="教学任务书">
+        <Table
+          size="small"
+          pagination={{ pageSize: 10 }}
+          rowKey={(r:any)=> r.key}
+          dataSource={rows}
+          columns={[
+            { title:'序号', dataIndex:'index', width: 70 },
+            { title:'课程（编号）', dataIndex:'courseCombined' },
+            { title:'专业名称', dataIndex:'major' },
+            { title:'课程类别', dataIndex:'category' },
+            { title:'任课教师', dataIndex:'teacher' },
+            { title:'课程班级名称', dataIndex:'teachClassName' },
+            { title:'授课方式', dataIndex:'teachMode' },
+            { title:'总学时', dataIndex:'hoursTotal' },
+            { title:'计划学时', dataIndex:'hoursPlan' },
+            { title:'已安排学时', dataIndex:'arrangedHours' },
+            { title:'班级人数', dataIndex:'students' },
+            { title:'周次', dataIndex:'weeks' },
+            { title:'周学时', dataIndex:'weekHours' },
+            { title:'连上节数', dataIndex:'continuousPeriods' },
+            { title:'教学班级名称', dataIndex:'teachClassName' },
+            { title:'合班信息', dataIndex:'combineInfo' },
+            { title:'审注', dataIndex:'auditNote' },
+            { title:'审核状态', dataIndex:'auditStatus' },
+            { title:'备注', dataIndex:'remark' }
+          ]}
+        />
       </Card>
     </div>
   )
@@ -4190,7 +5683,7 @@ export const TeachingTaskWorkload: React.FC = () => {
       const m = Array.isArray(majors) ? majors.find((x: any) => (x.name || x.major) === majorName) : null
       return m?.level || ''
     }
-    const splitTeachers = (scope: any) => String(scope || '').split(/[、，,;\s]+/).map((s) => s.trim()).filter((s) => s.length > 0)
+    const splitTeachers = (scope: any) => String(scope || '').split(/[、，,;\s]+/).map((s) => s.trim()).filter((s) => s.length > 0 && s!=='不限' && s!=='张三')
     const map = new Map<string, any>()
     filteredOfferings.forEach((o: any) => {
       const ts = splitTeachers(o.teacherScope)
@@ -4300,11 +5793,18 @@ export const TeachingTask: React.FC = () => {
   const [taskBooks, setTaskBooks] = useState<any[]>([])
   const [offerings, setOfferings] = useState<any[]>([])
   const [filterForm] = Form.useForm()
+  const [rightFilterForm] = Form.useForm()
+  const [taskSetupForm] = Form.useForm()
+  const [editorForm] = Form.useForm()
   const [taskForm] = Form.useForm()
   const [filters, setFilters] = useState<any>({})
+  const [rightFilters, setRightFilters] = useState<any>({})
   const [selectedLeft, setSelectedLeft] = useState<any[]>([])
   const [selectedRightKeys, setSelectedRightKeys] = useState<string[]>([])
   const [downloadUrl, setDownloadUrl] = useState<string>('')
+  const [editingCourse, setEditingCourse] = useState<any|null>(null)
+  const [previewBooks, setPreviewBooks] = useState<any[]>([])
+  const [users, setUsers] = useState<any[]>([])
   const TASKS_KEY = 'teachingTasks'
   const BOOKS_KEY = 'teachingTaskBooks'
   useEffect(() => {
@@ -4314,6 +5814,14 @@ export const TeachingTask: React.FC = () => {
     if (rawBooks) { try { setTaskBooks(JSON.parse(rawBooks)) } catch {} }
     const rawOff = localStorage.getItem('offerings')
     if (rawOff) { try { setOfferings(JSON.parse(rawOff)) } catch {} }
+    try {
+      let list:any[]=[]
+      const rawCache = localStorage.getItem('cache_users_list') || '{}'
+      const rawSys = localStorage.getItem('sys_users') || '[]'
+      try { const parsed = JSON.parse(rawCache); if (parsed && Array.isArray(parsed.list)) list = parsed.list } catch {}
+      if (!Array.isArray(list) || list.length===0) { try { list = JSON.parse(rawSys) } catch {} }
+      setUsers(Array.isArray(list)?list:[])
+    } catch {}
   }, [])
   useEffect(() => {
     const onStorage = (e: any) => {
@@ -4338,23 +5846,118 @@ export const TeachingTask: React.FC = () => {
     <div>
       <Card className="page-content" title="教学任务分配">
         <Space direction="vertical" style={{ width: '100%' }}>
-          <Form form={filterForm} layout="inline" onValuesChange={(_, all) => setFilters(all)}>
-            <Form.Item name="grade" label="年级"><Select allowClear style={{ width: 120 }} options={(() => { const s=new Set<string>(); offerings.forEach((o:any)=>{ if(o.grade) s.add(String(o.grade)) }); return Array.from(s).map(v=>({value:v,label:v})) })()} /></Form.Item>
-            <Form.Item name="major" label="专业"><Select allowClear showSearch style={{ width: 180 }} options={(() => { const s=new Set<string>(); offerings.forEach((o:any)=>{ if(o.major) s.add(String(o.major)) }); return Array.from(s).map(v=>({value:v,label:v})) })()} /></Form.Item>
-            <Form.Item name="courseCombined" label="课程"><Select allowClear showSearch style={{ width: 260 }} options={(() => { const s=new Set<string>(); offerings.forEach((o:any)=>{ if(o.course) s.add(String(o.course)) }); return Array.from(s).map(v=>({value:v,label:v})) })()} /></Form.Item>
-            <Form.Item><Button onClick={() => { filterForm.resetFields(); setFilters({}) }}>重置</Button></Form.Item>
-          </Form>
           <Row gutter={12}>
             <Col span={8}>
-              <Card size="small" title="已选择课程班">
-                <Table
-                  size="small"
-                  pagination={false}
-                  rowKey="key"
-                  dataSource={selectedLeft}
-                  rowSelection={{ selectedRowKeys: [], onChange: (keys) => setSelectedLeft((prev)=> prev.filter((c)=> !(keys as string[]).includes(c.key))) }}
-                  columns={[{ title:'班级', dataIndex:'cls' }, { title:'容量', dataIndex:'capacity' }]}
-                />
+              <Card size="small" title="教学任务书分配">
+                <div style={{ background:'#f6d6d6', border:'1px solid #d9a3a3', padding:12, borderRadius:4, color:'#333', marginBottom:12, lineHeight:1.7, fontSize:14 }}>
+                  {(() => {
+                    const o = editingCourse || {}
+                    const items:any[] = [
+                      `学年学期：2025~2026学年第一学期\u00a0\u00a0年级：${o.grade||''}\u00a0\u00a0专业：${o.major||''}`,
+                      `课程名称（编号）：${o.course||''}${o.code?`（${o.code}）`:''}`,
+                      `课程类型：${o.category||''}\u00a0\u00a0总学时：${Number(o.hoursTotal|| Number(o.hoursTheory||0)+Number(o.hoursExperiment||0)+Number(o.hoursTraining||0)+Number(o.hoursPractice||0))}`,
+                      `课程类别：${o.position||'必修课'}\u00a0\u00a0考核方式：${o.assess||''}`,
+                      `关联班级：${String(o.linkedClass||'').trim()}`,
+                      `关联教师：${String(o.teacherScope||'').trim()}`
+                    ]
+                    return items.map((t,idx)=> (<div key={idx}>{t}</div>))
+                  })()}
+                </div>
+                <Form form={editorForm} layout="vertical" style={{ marginTop: 12 }} onValuesChange={(changed) => {
+                  if (Object.prototype.hasOwnProperty.call(changed, '是否分组') && String(changed['是否分组']) !== '是') {
+                    try { editorForm.setFieldsValue({ 组数: undefined, 每组人数: undefined }) } catch {}
+                  }
+                }}>
+                  <Row gutter={12}>
+                    <Col span={12}><Form.Item name="选择第一任课教师" label="选择第一任课教师"><Select allowClear showSearch options={users.map((u:any)=> ({ value: String(u.name||u.username||''), label: String(u.name||u.username||'') }))} /></Form.Item></Col>
+                    <Col span={12}><Form.Item name="选择第二任课教师" label="选择第二任课教师"><Select allowClear showSearch options={users.map((u:any)=> ({ value: String(u.name||u.username||''), label: String(u.name||u.username||'') }))} /></Form.Item></Col>
+                    <Col span={24}><Form.Item name="上课班级组成" label="上课班级组成"><Select allowClear options={[{value:'自然班',label:'自然班'},{value:'合班',label:'合班'},{value:'分班',label:'分班'}]} /></Form.Item></Col>
+                    <Col span={24}><Form.Item name="教学班级名称" label="教学班级名称"><Input placeholder="确保提交后自动生成上课班号" /></Form.Item></Col>
+                    <Col span={24}><Form.Item name="行标班级" label="行标班级"><Input.TextArea rows={3} placeholder="示例：计科1班(60人)；计科2班(60人)；计科实验班(30人)" /></Form.Item></Col>
+                    <Col span={8}><Form.Item name="合班数" label="合班数"><InputNumber style={{ width: '100%' }} /></Form.Item></Col>
+                    <Col span={8}><Form.Item name="连上节数" label="连上节数"><Select allowClear options={[{value:'1',label:'1'},{value:'2',label:'2'},{value:'3',label:'3'},{value:'4',label:'4'}]} /></Form.Item></Col>
+                    <Col span={8}><Form.Item name="单双" label="单双"><Select allowClear options={[{value:'不区分',label:'不区分'},{value:'单周',label:'单周'},{value:'双周',label:'双周'}]} /></Form.Item></Col>
+                    <Col span={8}><Form.Item name="周次" label="周次"><Input placeholder="1-18" /></Form.Item></Col>
+                    <Col span={12}><Form.Item name="周时分布" label="周时分布"><Select allowClear options={[{value:'周一-周三',label:'周一-周三'},{value:'周一-周五',label:'周一-周五'}]} /></Form.Item></Col>
+                    <Col span={12}><Form.Item name="选择上课地点" label="选择上课地点"><Input placeholder="如：一号楼-301" /></Form.Item></Col>
+                    <Col span={8}><Form.Item name="是否分组" label="是否分组"><Select allowClear options={[{value:'否',label:'否'},{value:'是',label:'是'}]} /></Form.Item></Col>
+                    <Form.Item noStyle shouldUpdate={(prev, cur) => prev['是否分组'] !== cur['是否分组']}>
+                      {({ getFieldValue }) => {
+                        const grouped = String(getFieldValue('是否分组')) === '是'
+                        return (
+                          <>
+                            <Col span={8} style={{ display: grouped ? 'block' : 'none' }}><Form.Item name="组数" label="组数"><InputNumber style={{ width: '100%' }} /></Form.Item></Col>
+                            <Col span={8} style={{ display: grouped ? 'block' : 'none' }}><Form.Item name="每组人数" label="每组人数"><InputNumber style={{ width: '100%' }} /></Form.Item></Col>
+                          </>
+                        )
+                      }}
+                    </Form.Item>
+                  </Row>
+                </Form>
+                <Space style={{ marginTop: 12 }}>
+                  <Button onClick={() => {
+                    const o = editingCourse
+                    if (!o) return
+                    const v = editorForm.getFieldsValue()
+                    const row = {
+                      key: `${Date.now()}_preview`,
+                      academic: '2025~2026学年第一学期',
+                      term: String(o.term||''),
+                      college: '',
+                      major: String(o.major||''),
+                      grade: String(o.grade||''),
+                      code: String(o.code||''),
+                      course: String(o.course||''),
+                      nature: String(o.category||''),
+                      hoursTotal: Number(v['总学时']|| Number(o.hoursTotal||0)),
+                      credit: Number(v['学分']|| Number(o.credit||0)),
+                      assess: String(o.assess||''),
+                      weekHours: '',
+                      time: String(v['上课时间']||''),
+                      weeks: '1-16',
+                      location: String(v['选择上课地点']||''),
+                      cls: String(v['教学班级名称']||''),
+                      teacher: String(v['选择第一任课教师']||''),
+                      teacherTitle: '',
+                      teacherDept: String(o.department||''),
+                      requirements: `授课方式:${String(v['授课方式']||'')}`,
+                      approvalChain: String(o.auditChain||'系主任→教秘→教务处'),
+                      secondTeacher: String(v['选择第二任课教师']||'')
+                    }
+                    setPreviewBooks([row])
+                  }}>预览</Button>
+                  <Button type="primary" onClick={() => {
+                    const o = editingCourse
+                    if (!o) return
+                    const v = editorForm.getFieldsValue()
+                    const row = {
+                      key: `${Date.now()}_book`,
+                      academic: '2025~2026学年第一学期',
+                      term: String(o.term||''),
+                      college: '',
+                      major: String(o.major||''),
+                      grade: String(o.grade||''),
+                      code: String(o.code||''),
+                      course: String(o.course||''),
+                      nature: String(o.category||''),
+                      hoursTotal: Number(v['总学时']|| Number(o.hoursTotal||0)),
+                      credit: Number(v['学分']|| Number(o.credit||0)),
+                      assess: String(o.assess||''),
+                      weekHours: '',
+                      time: String(v['上课时间']||''),
+                      weeks: '1-16',
+                      location: String(v['选择上课地点']||''),
+                      cls: String(v['教学班级名称']||''),
+                      teacher: String(v['选择第一任课教师']||''),
+                      teacherTitle: '',
+                      teacherDept: String(o.department||''),
+                      requirements: `授课方式:${String(v['授课方式']||'')}`,
+                      approvalChain: String(o.auditChain||'系主任→教秘→教务处'),
+                      secondTeacher: String(v['选择第二任课教师']||'')
+                    }
+                    setTaskBooks((prev)=> [row, ...prev])
+                  }}>确认任务书</Button>
+                </Space>
               </Card>
             </Col>
             <Col span={1}>
@@ -4363,7 +5966,12 @@ export const TeachingTask: React.FC = () => {
                   const filtered = offerings.filter((o:any)=> (
                     (!filters.grade || String(o.grade)===String(filters.grade)) &&
                     (!filters.major || String(o.major)===String(filters.major)) &&
-                    (!filters.courseCombined || String(o.course)===String(filters.courseCombined))
+                    (!filters.courseCombined || String(o.course)===String(filters.courseCombined)) &&
+                    (!filters.department || String(o.department)===String(filters.department)) &&
+                    (!rightFilters.grade || String(o.grade)===String(rightFilters.grade)) &&
+                    (!rightFilters.major || String(o.major)===String(rightFilters.major)) &&
+                    (!rightFilters.courseCombined || String(o.course)===String(rightFilters.courseCombined)) &&
+                    (!rightFilters.department || String(o.department)===String(rightFilters.department))
                   ))
                   const list:any[]=[]
                   filtered.forEach((o:any)=>{
@@ -4381,6 +5989,13 @@ export const TeachingTask: React.FC = () => {
             </Col>
             <Col span={15}>
               <Card size="small" title="开课计划">
+                <Form form={rightFilterForm} layout="inline" onValuesChange={(_, all) => setRightFilters(all)} style={{ marginBottom: 8 }}>
+                  <Form.Item name="grade" label="年级"><Select allowClear style={{ width: 120 }} options={(() => { const s=new Set<string>(); offerings.forEach((o:any)=>{ if(o.grade) s.add(String(o.grade)) }); return Array.from(s).map(v=>({value:v,label:v})) })()} /></Form.Item>
+                  <Form.Item name="major" label="专业"><Select allowClear showSearch style={{ width: 180 }} options={(() => { const s=new Set<string>(); offerings.forEach((o:any)=>{ if(o.major) s.add(String(o.major)) }); return Array.from(s).map(v=>({value:v,label:v})) })()} /></Form.Item>
+                  <Form.Item name="courseCombined" label="课程"><Select allowClear showSearch style={{ width: 240 }} options={(() => { const s=new Set<string>(); offerings.forEach((o:any)=>{ if(o.course) s.add(String(o.course)) }); return Array.from(s).map(v=>({value:v,label:v})) })()} /></Form.Item>
+                  <Form.Item name="department" label="承担单位"><Select allowClear showSearch style={{ width: 180 }} options={(() => { const s=new Set<string>(); offerings.forEach((o:any)=>{ if(o.department) s.add(String(o.department)) }); return Array.from(s).map(v=>({value:v,label:v})) })()} /></Form.Item>
+                  <Form.Item><Button onClick={() => { rightFilterForm.resetFields(); setRightFilters({}) }}>重置</Button></Form.Item>
+                </Form>
                 <Table
                   size="small"
                   pagination={{ pageSize: 6 }}
@@ -4389,7 +6004,12 @@ export const TeachingTask: React.FC = () => {
                     const filtered = offerings.filter((o:any)=> (
                       (!filters.grade || String(o.grade)===String(filters.grade)) &&
                       (!filters.major || String(o.major)===String(filters.major)) &&
-                      (!filters.courseCombined || String(o.course)===String(filters.courseCombined))
+                      (!filters.courseCombined || String(o.course)===String(filters.courseCombined)) &&
+                      (!filters.department || String(o.department)===String(filters.department)) &&
+                      (!rightFilters.grade || String(o.grade)===String(rightFilters.grade)) &&
+                      (!rightFilters.major || String(o.major)===String(rightFilters.major)) &&
+                      (!rightFilters.courseCombined || String(o.course)===String(rightFilters.courseCombined)) &&
+                      (!rightFilters.department || String(o.department)===String(rightFilters.department))
                     ))
                     const list:any[]=[]
                     filtered.forEach((o:any)=>{
@@ -4409,15 +6029,47 @@ export const TeachingTask: React.FC = () => {
                         linkedClass:String(o.linkedClass||''),
                         teacherScope:String(o.teacherScope||'') || '',
                         cls:c,
-                        capacity:Number(o.classSizeThreshold||40)
+                        capacity:Number(o.classSizeThreshold||40),
+                        __off:o
                       }) })
                     })
                     list.sort((a,b)=> String(a.major).localeCompare(String(b.major)) || String(a.cls).localeCompare(String(b.cls)))
                     return list
                   })()}
+                  onRow={(r:any)=> ({ onClick: ()=> {
+                    setEditingCourse(r.__off)
+                    try {
+                      const th = Number(r.__off?.hoursTheory||0)
+                      const lab = Number(r.__off?.hoursExperiment||0)
+                      const trn = Number(r.__off?.hoursTraining||0)
+                      const prac = Number(r.__off?.hoursPractice||0)
+                      editorForm.setFieldsValue({
+                        教学班级名称: r.cls,
+                        上课时间: '',
+                        选择上课地点: '',
+                        选择第一任课教师: '',
+                        选择第二任课教师: '',
+                        上课班级组成: '',
+                        行标班级: '',
+                        连上节数: '',
+                        单双: '不区分',
+                        周次: '1-18',
+                        周时分布: '周一-周五',
+                        授课方式: r.__off?.category||'',
+                        学分: Number(r.__off?.credit||0),
+                        总学时: th+lab+trn+prac,
+                        理论学时: th,
+                        实验学时: lab,
+                        实训学时: trn,
+                        合班数: 0,
+                        组数: 0,
+                        每组人数: 0
+                      })
+                    } catch {}
+                  } })}
                   rowSelection={{ type:'checkbox', selectedRowKeys:selectedRightKeys, onChange:(keys)=> setSelectedRightKeys(keys as string[]) }}
                   columns={[
-                    { title:'学年学期', dataIndex:'academic', width: 160 },
+                    { title:'学年学期', render: () => '2025~2026学年第一学期', width: 160 },
                     { title:'年级', dataIndex:'grade', width: 100 },
                     { title:'专业', dataIndex:'major', width: 180 },
                     { title:'课程名称(编号)', render: (_:any, r:any) => `${r.course||''}${r.code?`(${r.code})`:''}` },
@@ -4431,62 +6083,28 @@ export const TeachingTask: React.FC = () => {
               </Card>
             </Col>
           </Row>
-          <Form form={taskForm} layout="inline" onFinish={(values) => {
-            const t=String(values.teacher||'')
-            const c=String(values.courseCombined||filters.courseCombined||'')
-            const timePref=String(values.timePref||'')
-            const roomType=String(values.roomType||'')
-            const mode=String(values.mode||'自然班')
-            const splitCount=Number(values.splitCount||2)
-            const profile=(()=>{ try{ const raw=localStorage.getItem('teacherProfiles')||'[]'; const list=JSON.parse(raw) as any[]; return list.find((x)=> String(x.name||'')===t) || null }catch{ return null } })()
-            const off=offerings.find((o:any)=> String(o.course||'')===c) || null
-            const schedules=(()=>{ try{ const raw=localStorage.getItem('schedules')||'[]'; return JSON.parse(raw) as any[] }catch{ return [] } })()
-            const sumHoursExisting=tasks.filter((x)=> String(x.teacher||'')===t).reduce((acc,x)=>{ const o=offerings.find((o:any)=> String(o.course||'')===String(x.course||'')); const h=Number(o?.hoursTotal||0); return acc+h },0)
-            const baseRows = (()=>{
-              const sel = selectedLeft.filter((c:any)=> selectedRightKeys.includes(c.key))
-              if(mode==='合班'){
-                const combinedCls = sel.map((s)=> s.cls).join('、')
-                return [{ key:`${Date.now()}_${Math.random()}`, teacher:t, course:c, cls:combinedCls, time:timePref, roomType }]
-              }
-              if(mode==='分班'){
-                const out:any[]=[]
-                sel.forEach((s:any)=>{ for(let i=1;i<=splitCount;i++){ out.push({ key:`${Date.now()}_${s.key}_${i}`, teacher:t, course:c, cls:`${s.cls}-分班${i}`, time:timePref, roomType }) } })
-                return out
-              }
-              return sel.map((s:any)=> ({ key:`${Date.now()}_${s.key}`, teacher:t, course:c, cls:s.cls, time:timePref, roomType }))
-            })()
-            const rows = baseRows.map((r:any)=>{
-              const hours=Number(off?.hoursTotal||0)
-              const limit=Number(profile?.maxHours||240)
-              const willOk=profile?.willingness==null?true:Boolean(profile?.willingness)
-              const qualOk=(()=>{ const title=String(profile?.title||''); const nature=String(off?.category||'')+String(off?.nature||''); if(nature.includes('核心')) return /(教授|副教授)/.test(title); return true })()
-              const matchOk=(()=>{ const dep=String(profile?.department||''); const ocdep=String(off?.department||''); if(dep && ocdep && dep!==ocdep) return false; return true })()
-              const timeConfTeacher=schedules.some((s)=> s.time && r.time && s.time===r.time && s.teacher && t && s.teacher===t)
-              const timeConfClass=schedules.some((s)=> s.time && r.time && s.time===r.time && s.cls && r.cls && s.cls===r.cls)
-              const overload=sumHoursExisting+hours>limit
-              const issues:string[]=[]
-              if(!willOk) issues.push('教师意愿不满足')
-              if(!qualOk) issues.push('教学资格不满足')
-              if(!matchOk) issues.push('专业对口不满足')
-              if(timeConfTeacher) issues.push('教师时间冲突')
-              if(timeConfClass) issues.push('班级时间冲突')
-              if(overload) issues.push('工作量超限')
-              const pass = issues.length===0
-              return { ...r, status:'草稿', feedback:'', validationPass: pass?'达标':'未达标', validationIssues: issues.join('；') }
-            })
-            if(rows.length===0) return
-            setTasks((prev)=> [...rows, ...prev])
-            taskForm.resetFields()
-          }}>
-            <Form.Item name="teacher" label="教师"><Input style={{ width: 160 }} placeholder="姓名" /></Form.Item>
-            <Form.Item name="courseCombined" label="课程"><Select allowClear showSearch style={{ width: 260 }} options={(() => { const s=new Set<string>(); offerings.forEach((o:any)=>{ if(o.course) s.add(String(o.course)) }); return Array.from(s).map(v=>({value:v,label:v})) })()} /></Form.Item>
-            <Form.Item name="mode" label="方式"><Select style={{ width: 140 }} options={[{value:'自然班',label:'自然班'},{value:'合班',label:'合班'},{value:'分班',label:'分班'}]} /></Form.Item>
-            <Form.Item name="splitCount" label="分班数"><InputNumber style={{ width: 100 }} /></Form.Item>
-            <Form.Item name="timePref" label="时间范围"><Input style={{ width: 220 }} placeholder="如：周一-周三" /></Form.Item>
-            <Form.Item name="roomType" label="场地要求"><Select allowClear style={{ width: 180 }} options={[{value:'普通教室',label:'普通教室'},{value:'多媒体教室',label:'多媒体教室'},{value:'计算机房',label:'计算机房'},{value:'实验室',label:'实验室'},{value:'体育馆',label:'体育馆'}]} /></Form.Item>
-            <Form.Item><Button type="primary" htmlType="submit">新增分配</Button></Form.Item>
-          </Form>
         </Space>
+      </Card>
+
+      <Card className="page-content" title="预览">
+        <Table
+          size="small"
+          pagination={false}
+          rowKey="key"
+          dataSource={previewBooks}
+          columns={[
+            {title:'学年学期',dataIndex:'academic', render:()=> '2025~2026学年第一学期'},
+            {title:'课程编号',dataIndex:'code'},
+            {title:'课程名称',dataIndex:'course'},
+            {title:'课程性质',dataIndex:'nature'},
+            {title:'总学时',dataIndex:'hoursTotal'},
+            {title:'学分',dataIndex:'credit'},
+            {title:'上课时间',dataIndex:'time'},
+            {title:'授课班级',dataIndex:'cls'},
+            {title:'主讲教师',dataIndex:'teacher'},
+            {title:'第二任课教师',dataIndex:'secondTeacher'}
+          ]}
+        />
       </Card>
 
       <Card className="page-content" title="教学任务书">
@@ -4496,8 +6114,7 @@ export const TeachingTask: React.FC = () => {
           rowKey="key"
           dataSource={taskBooks}
           columns={[
-            {title:'学年学期',dataIndex:'academic', render:(v:any)=>{ const s=String(v||''); const m=/^(\d{4}).*?(秋|春|第一学期|第二学期)?/.exec(s); if(!m) return s; const y=Number(m[1]||0); const termRaw=String(m[2]||''); const term=termRaw?((/秋|第一/.test(termRaw))?'第一学期':'第二学期'):''; return `${y}~${y+1}学年${term?` ${term}`:''}` }},
-            {title:'学期',dataIndex:'term'},
+            {title:'学年学期',dataIndex:'academic', render:()=> '2025~2026学年第一学期'},
             {title:'学院',dataIndex:'college'},
             {title:'专业',dataIndex:'major'},
             {title:'年级',dataIndex:'grade'},
@@ -4520,29 +6137,94 @@ export const TeachingTask: React.FC = () => {
           ]}
         />
         <Space style={{ marginTop: 12 }}>
-          <Button onClick={() => {
-            const books:any[]=[]
-            tasks.forEach((t)=>{
-              const og = offerings.find((o:any)=> String(o.course||'')===String(t.course||''))
-              const academic = String(og?.academic||'')
-              const grade = String(og?.grade||'')
-              const major = String(og?.major||'')
-              const code = String(og?.code||'')
-              const nature = String(og?.category||'')
-              const credit = Number(og?.credit||0)
-              const assess = String(og?.assess||'')
-              const hoursTotal = Number(og?.hoursTotal||0)
-              const weekHours = ''
-              const weeks = '1-16'
-              const location = ''
-              const department = String(og?.department||'')
-              const chain = String(og?.auditChain||'系主任→教秘→教务处')
-              books.push({ key:`${t.key}_book`, academic, term:String(og?.term||''), college:'', major, grade, code, course:String(t.course||''), nature, hoursTotal, credit, assess, weekHours, time:String(t.time||''), weeks, location, cls:String(t.cls||''), teacher:String(t.teacher||''), teacherTitle:'', teacherDept:department, requirements:`场地:${String(t.roomType||'')}`, approvalChain:chain })
-            })
-            setTaskBooks(books)
-          }}>生成任务书</Button>
           <a href={downloadUrl} download={`教学任务书_${Date.now()}.json`}><Button disabled={!taskBooks.length}>导出JSON</Button></a>
         </Space>
+      </Card>
+    </div>
+  )
+}
+
+export const TeachingTaskTeacherCourseStats: React.FC = () => {
+  const [offerings, setOfferings] = useState<any[]>([])
+  const [teacherLinkDB, setTeacherLinkDB] = useState<Record<string, { teachers: string[]; createdAt: number }>>({})
+  const [users, setUsers] = useState<any[]>([])
+  const [filtersForm] = Form.useForm()
+  const [filters, setFilters] = useState<any>({})
+  useEffect(() => {
+    try {
+      const rawOff = localStorage.getItem('offerings') || '[]'
+      const rawTL = localStorage.getItem('db_offering_teacher_links') || '{}'
+      const rawSys = localStorage.getItem('sys_users') || '[]'
+      const rawCache = localStorage.getItem('cache_users_list') || '{}'
+      setOfferings(Array.isArray(JSON.parse(rawOff)) ? JSON.parse(rawOff) : [])
+      const tl = JSON.parse(rawTL)
+      setTeacherLinkDB(tl && typeof tl==='object' ? tl : {})
+      let list: any[] = []
+      try { const parsed = JSON.parse(rawCache); if (parsed && Array.isArray(parsed.list)) list = parsed.list } catch {}
+      if (!Array.isArray(list) || list.length===0) { try { const arr = JSON.parse(rawSys); list = Array.isArray(arr) ? arr : [] } catch {} }
+      setUsers(list)
+    } catch {}
+  }, [])
+  const userMap = useMemo(() => {
+    const m = new Map<string, any>()
+    users.forEach((u:any)=> { if (u?.name) m.set(String(u.name), u) })
+    return m
+  }, [users])
+  const splitTeachers = (scope: any) => String(scope || '').split(/[、，,;；\s]+/).map((s) => s.trim()).filter((s) => s.length > 0 && s!=='不限' && s!=='张三')
+  const data = useMemo(() => {
+    const groups = new Map<string, any>()
+    const list = offerings.filter((o)=> (
+      (!filters.grade || String(o.grade)===String(filters.grade)) &&
+      (!filters.major || String(o.major)===String(filters.major))
+    ))
+    list.forEach((o:any)=>{
+      const keyCombined = `${o.course||''}${o.code?`(${o.code})`:''}`
+      const explicit = teacherLinkDB[keyCombined]?.teachers || []
+      const ts = explicit.length>0 ? explicit : splitTeachers(o.teacherScope)
+      ts.forEach((t)=>{
+        const u = userMap.get(String(t)) || {}
+        const dept = u?.department || o.department || ''
+        const job = u?.jobNo ? `（${u.jobNo}）` : ''
+        const g = groups.get(t) || { key: `grp-${t}`, teacher: t, teacherDisplay: `${t}${job}`, dept, count: 0, total: 0, children: [] as any[] }
+        const theory = Number(o.hoursTheory||0), experiment = Number(o.hoursExperiment||0), training = Number(o.hoursTraining||0), practice = Number(o.hoursPractice||0)
+        const total = Number(o.hoursTotal|| theory+experiment+training+practice)
+        g.count += 1
+        g.total += total
+        g.children.push({ key: `${t}-${o.key}`, code: o.code||'', course: o.course||'', category: `${o.category||''}${o.nature?`/${o.nature}`:''}`, credit: Number(o.credit||0), hoursTheory: theory, hoursExperiment: experiment, hoursTraining: training, hoursPractice: practice,承担学时: total, assess: o.assess||'' })
+        groups.set(t, g)
+      })
+    })
+    let arr = Array.from(groups.values())
+    if (filters.teacher) arr = arr.filter((g:any)=> String(g.teacherDisplay).includes(String(filters.teacher)))
+    arr.forEach((g:any)=> { g.children.sort((a:any,b:any)=> String(a.course).localeCompare(String(b.course))) })
+    arr.sort((a:any,b:any)=> String(a.teacher).localeCompare(String(b.teacher)))
+    return arr
+  }, [offerings, teacherLinkDB, userMap, filters])
+  return (
+    <div>
+      <Card className="page-content" title="任课教师承担课程统计">
+        <Form form={filtersForm} layout="inline" onValuesChange={(_, all)=> setFilters(all)} style={{ marginBottom: 12 }}>
+          <Form.Item name="grade" label="年级"><Select allowClear style={{ width: 120 }} options={(() => { const s=new Set<string>(); offerings.forEach((o:any)=>{ if(o.grade) s.add(String(o.grade)) }); return Array.from(s).map(v=>({value:v,label:v})) })()} /></Form.Item>
+          <Form.Item name="major" label="专业"><Select allowClear showSearch style={{ width: 180 }} options={(() => { const s=new Set<string>(); offerings.forEach((o:any)=>{ if(o.major) s.add(String(o.major)) }); return Array.from(s).map(v=>({value:v,label:v})) })()} /></Form.Item>
+          <Form.Item name="teacher" label="教师"><Input style={{ width: 200 }} placeholder="包含" /></Form.Item>
+          <Form.Item><Button onClick={()=> { filtersForm.resetFields(); setFilters({}) }}>重置</Button></Form.Item>
+        </Form>
+        <Table size="small" pagination={false} rowKey="key" dataSource={data} expandable={{ defaultExpandAllRows: true }} columns={[
+          { title:'所属院系', render: (_:any, r:any) => r.children ? r.dept||'' : '' },
+          { title:'教师姓名（工号）', render: (_:any, r:any) => r.children ? r.teacherDisplay||'' : '' },
+          { title:'承担课程门数', render: (_:any, r:any) => r.children ? r.count||0 : '' },
+          { title:'学时', render: (_:any, r:any) => r.children ? r.total||0 : '' },
+          { title:'课程编号', dataIndex:'code', render: (_:any, r:any) => r.children ? '' : r.code },
+          { title:'课程名称', dataIndex:'course', render: (_:any, r:any) => r.children ? '' : r.course },
+          { title:'课程类别', dataIndex:'category', render: (_:any, r:any) => r.children ? '' : r.category },
+          { title:'学分', dataIndex:'credit', render: (_:any, r:any) => r.children ? '' : r.credit },
+          { title:'讲授', dataIndex:'hoursTheory', render: (_:any, r:any) => r.children ? '' : r.hoursTheory },
+          { title:'实验', dataIndex:'hoursExperiment', render: (_:any, r:any) => r.children ? '' : r.hoursExperiment },
+          { title:'实训', dataIndex:'hoursTraining', render: (_:any, r:any) => r.children ? '' : r.hoursTraining },
+          { title:'实践', dataIndex:'hoursPractice', render: (_:any, r:any) => r.children ? '' : r.hoursPractice },
+          { title:'承担学时', dataIndex:'承担学时', render: (_:any, r:any) => r.children ? '' : r['承担学时'] },
+          { title:'考核方式', dataIndex:'assess', render: (_:any, r:any) => r.children ? '' : r.assess }
+        ]} />
       </Card>
     </div>
   )
@@ -4591,22 +6273,145 @@ export const Adjustments: React.FC = () => {
 }
 
 export const ApprovalsAndNotifications: React.FC = () => {
+  const navigate = useNavigate()
+  const loc = useLocation()
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [items, setItems] = useState<any[]>([])
+  const [page, setPage] = useState(1)
+  const [pageSize, setPageSize] = useState(20)
+  const [total, setTotal] = useState(0)
+  const [sorter, setSorter] = useState<{ field?: string; order?: 'ascend'|'descend' }>({ field: 'submitTime', order: 'descend' })
+  const pullingRef = useRef(false)
+  const pullYRef = useRef(0)
+  const abortRef = useRef<AbortController | null>(null)
+  const pollRef = useRef<number | null>(null)
+
+  const userId = String(localStorage.getItem('currentUserId') || 'u_demo')
+  const userRoles = (() => { try { const raw = localStorage.getItem('currentUserRoles') || '[]'; const arr = JSON.parse(raw); return Array.isArray(arr) ? arr.map(String) : [] } catch { return [] } })()
+
+  const seedIfEmpty = () => {
+    if (items.length > 0) return
+    const now = Date.now()
+    const gen = Array.from({ length: 25 }).map((_, i) => ({
+      id: `AP-${1000 + i}`,
+      code: `AP-${1000 + i}`,
+      title: i % 3 === 0 ? '开课计划审核' : i % 3 === 1 ? '排课调整审批' : '培养方案变更审批',
+      submitTime: new Date(now - i * 3600_000).toISOString(),
+      status: '待审核',
+      priority: (['低','中','高'])[i % 3],
+      applicant: i % 2 === 0 ? '张三' : '李四',
+      visibleTo: [userId, ...(userRoles.includes('管理员') ? ['*'] : [])]
+    }))
+    setItems(gen)
+    setTotal(gen.length)
+  }
+
+  const fetchPending = async (opts?: { page?: number; pageSize?: number; sortField?: string; sortOrder?: 'ascend'|'descend' }) => {
+    const pg = opts?.page ?? page
+    const ps = opts?.pageSize ?? pageSize
+    const sf = opts?.sortField ?? sorter.field ?? 'submitTime'
+    const so = opts?.sortOrder ?? sorter.order ?? 'descend'
+    abortRef.current?.abort()
+    const ac = new AbortController()
+    abortRef.current = ac
+    setLoading(true)
+    setError(null)
+    try {
+      const url = `/api/approvals/pending?userId=${encodeURIComponent(userId)}&page=${pg}&pageSize=${ps}&sort=${sf}&order=${so}`
+      const res = await fetch(url, { signal: ac.signal })
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      const data = await res.json()
+      const list = Array.isArray(data?.items) ? data.items : []
+      const safe = list.filter((x: any) => String(x.status || '') === '待审核' && ((x.visibleTo || []).includes(userId) || (x.visibleTo || []).includes('*')))
+      setItems(safe)
+      setTotal(Number(data?.total || safe.length))
+      setPage(pg)
+      setPageSize(ps)
+    } catch (e: any) {
+      setError('网络异常，已切换为本地演示数据')
+      seedIfEmpty()
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchPending({ page: 1, pageSize: 20 })
+    if (pollRef.current) window.clearInterval(pollRef.current)
+    pollRef.current = window.setInterval(() => { fetchPending({ page, pageSize }) }, 15_000)
+    return () => { abortRef.current?.abort(); if (pollRef.current) window.clearInterval(pollRef.current) }
+  }, [])
+
+  const onTableChange = (_: any, __: any, sorterArg: any) => {
+    const field = sorterArg?.field || sorterArg?.columnKey || 'submitTime'
+    const order = sorterArg?.order || 'descend'
+    setSorter({ field, order })
+    fetchPending({ page: 1, pageSize, sortField: field, sortOrder: order })
+  }
+
+  const startPull = (e: React.TouchEvent<HTMLDivElement>) => { pullingRef.current = true; pullYRef.current = e.touches[0]?.clientY || 0 }
+  const movePull = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (!pullingRef.current) return
+    const dy = (e.touches[0]?.clientY || 0) - pullYRef.current
+    if (dy > 60) { pullingRef.current = false; fetchPending({ page: 1, pageSize }) }
+  }
+  const endPull = () => { pullingRef.current = false }
+
+  const handleApprove = (id: string) => {
+    setItems((prev) => prev.filter((x) => x.id !== id))
+    message.success('审核通过')
+  }
+  const handleView = (id: string) => { navigate(`/approvals?detail=${encodeURIComponent(id)}`) }
+
+  const query = new URLSearchParams(loc.search)
+  const detailId = query.get('detail') || ''
+  const detailItem = items.find((x) => String(x.id) === String(detailId)) || null
+
   return (
     <div>
       <div className="page-header">
-        <h2>审批与通知</h2>
-        <p>方案/开课/排课例外审批；通知推送</p>
+        <h2>待审核事项</h2>
+        <p>只显示当前用户有权限的待审核记录</p>
       </div>
-      <Card className="page-content" title="审批流">
-        <Table size="small" pagination={false} dataSource={[]} columns={[{title:'事项',dataIndex:'item'},{title:'当前节点',dataIndex:'node'},{title:'状态',dataIndex:'status'}]} />
+      <Card className="page-content" title="待审核列表" extra={<Space><Button onClick={()=> fetchPending({ page: 1, pageSize })}>刷新</Button>{error? <span style={{color:'#faad14'}}>{error}</span>: null}</Space>}>
+        <div onTouchStart={startPull} onTouchMove={movePull} onTouchEnd={endPull}>
+          <Table
+            size="small"
+            rowKey={(r:any)=> r.id || r.code}
+            loading={loading}
+            dataSource={items}
+            locale={{ emptyText: loading ? '加载中...' : '暂无待审核事项' }}
+            pagination={{ current: page, pageSize, total, showSizeChanger: true, pageSizeOptions: ['10','20','50'], onChange: (p, s)=> { setPage(p); setPageSize(s); fetchPending({ page: p, pageSize: s }) } }}
+            onChange={onTableChange}
+            columns={[
+              { title:'事项ID/编号', dataIndex:'id', key:'id', width: 160 },
+              { title:'事项标题/名称', dataIndex:'title', key:'title' },
+              { title:'提交时间', dataIndex:'submitTime', key:'submitTime', sorter:true },
+              { title:'当前状态', dataIndex:'status', key:'status', width: 100 },
+              { title:'优先级', dataIndex:'priority', key:'priority', sorter:true, width: 100 },
+              { title:'操作', key:'op', fixed:'right', width: 160, render: (_:any, r:any)=> (
+                <Space>
+                  <Button size="small" type="primary" onClick={()=> handleApprove(r.id)}>审核</Button>
+                  <Button size="small" onClick={()=> handleView(r.id)}>详情</Button>
+                </Space>
+              )}
+            ]}
+          />
+        </div>
       </Card>
-      <Card className="page-content" title="通知配置">
-        <Form layout="inline">
-          <Form.Item label="渠道"><Select options={[{value:'站内',label:'站内'},{value:'邮件',label:'邮件'},{value:'企业微信',label:'企业微信'}]} /></Form.Item>
-          <Form.Item label="上课前提醒"><Input placeholder="提前分钟数，如15" /></Form.Item>
-          <Form.Item><Button type="primary">保存配置</Button></Form.Item>
-        </Form>
-      </Card>
+      <Modal open={Boolean(detailItem)} title="事项详情" onCancel={()=> navigate('/approvals')} footer={<Button onClick={()=> navigate('/approvals')}>关闭</Button>}>
+        {detailItem ? (
+          <Descriptions column={1} size="small" items={[
+            { label:'事项ID', children: detailItem.id },
+            { label:'事项标题', children: detailItem.title },
+            { label:'提交时间', children: detailItem.submitTime },
+            { label:'状态', children: detailItem.status },
+            { label:'优先级', children: detailItem.priority },
+            { label:'申请人', children: detailItem.applicant }
+          ]} />
+        ) : null}
+      </Modal>
     </div>
   )
 }

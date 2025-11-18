@@ -45,8 +45,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       icon: <BookOutlined />,
       label: '培养方案',
       children: [
-        { key: '/curriculum/pro-course-settings', label: '专业课程设置表' },
-        { key: '/curriculum/pro-course-stats', label: '专业课程统计' },
+        { key: '/curriculum/pro-course-settings', label: '培养方案管理' },
+        { key: '/curriculum/pro-course-stats', label: '培养方案统计' },
       ]
     },
     // 删除“课程”顶级菜单（保留课程库在基础信息内）
@@ -56,6 +56,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       label: '开课计划',
       children: [
         { key: '/offering/plan', label: '开课计划' },
+        { key: '/offering/plan-merged-list', label: '开课计划汇总' },
         { key: '/offering/audit', label: '开课审核' },
         { key: '/offering/adjust-logs', label: '调整记录' },
         { key: '/offering/electives', label: '公共选修开课' },
@@ -66,11 +67,15 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     {
       key: '/tasks',
       icon: <FileDoneOutlined />,
-      label: '教学任务书',
+      label: '教学任务',
       children: [
-        { key: '/tasks', label: '教学任务书' },
+        { key: '/tasks', label: '教学任务分配' },
         { key: '/tasks/review', label: '教学任务书审核' },
+        { key: '/tasks/teacher-taskbook', label: '教师任务书' },
+        { key: '/tasks/schedule', label: '任务排课' },
+        { key: '/tasks/scheduled-list', label: '已编排课程列表' },
         { key: '/tasks/workload', label: '工作量统计' },
+        { key: '/tasks/teacher-course-stats', label: '任课教师承担课程统计' },
         { key: '/tasks/adjust-logs', label: '调整记录' },
       ]
     },
